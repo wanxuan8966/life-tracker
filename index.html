@@ -663,25 +663,32 @@ const ESEED=[
    details:"跳床有氧課 19:10–20:10（60分鐘）",note:"頂著睡眠不足撐完整場，大量出汗"},
 ];
 const TSEED=[
-  {id:1,date:"2026-05-15",exercise:"髖外展",weight:20,sets:3,reps:15,note:""},
-  {id:2,date:"2026-05-15",exercise:"深蹲",weight:8,sets:3,reps:10,note:""},
+  {id:1,date:"2026-05-15",exercise:"坐姿髖外展",weight:20,sets:3,reps:15,note:""},
+  {id:2,date:"2026-05-15",exercise:"高腳杯深蹲",weight:8,sets:3,reps:10,note:""},
   {id:3,date:"2026-05-15",exercise:"臀推",weight:6,sets:3,reps:10,note:"槓+左右各6kg"},
-  {id:4,date:"2026-05-15",exercise:"划船",weight:12,sets:3,reps:10,note:""},
+  {id:4,date:"2026-05-15",exercise:"坐姿划船",weight:12,sets:3,reps:10,note:""},
   {id:5,date:"2026-05-15",exercise:"滑輪下拉",weight:14.5,sets:3,reps:10,note:""},
   {id:6,date:"2026-05-18",exercise:"滑輪下拉",weight:17,sets:3,reps:10,note:"重量進步"},
-  {id:7,date:"2026-05-18",exercise:"划船",weight:14.5,sets:3,reps:10,note:""},
-  {id:8,date:"2026-05-18",exercise:"髖外展",weight:30,sets:3,reps:10,note:""},
-  {id:9,date:"2026-05-18",exercise:"內夾",weight:30,sets:3,reps:10,note:""},
+  {id:7,date:"2026-05-18",exercise:"坐姿划船",weight:14.5,sets:3,reps:10,note:""},
+  {id:8,date:"2026-05-18",exercise:"坐姿髖外展",weight:30,sets:3,reps:10,note:""},
+  {id:9,date:"2026-05-18",exercise:"坐姿內夾",weight:30,sets:3,reps:10,note:""},
   {id:10,date:"2026-05-23",exercise:"坐姿內夾",weight:14,sets:3,reps:15,note:""},
   {id:11,date:"2026-05-23",exercise:"坐姿髖外展",weight:21,sets:3,reps:15,note:""},
   {id:12,date:"2026-05-23",exercise:"壺鈴硬舉",weight:20,sets:2,reps:15,note:""},
   {id:13,date:"2026-05-23",exercise:"高腳杯深蹲",weight:12,sets:1,reps:15,note:""},
   {id:14,date:"2026-05-23",exercise:"臀推",weight:22.6,sets:1,reps:10,note:"槓+左右各11.3kg"},
-  {id:15,date:"2026-05-24",exercise:"髖外展",weight:25,sets:3,reps:10,note:""},
-  {id:16,date:"2026-05-24",exercise:"內夾",weight:20,sets:2,reps:10,note:""},
-  {id:17,date:"2026-05-24",exercise:"划船",weight:17.5,sets:3,reps:15,note:"最後一組13下"},
+  {id:15,date:"2026-05-24",exercise:"坐姿髖外展",weight:25,sets:3,reps:10,note:""},
+  {id:16,date:"2026-05-24",exercise:"坐姿內夾",weight:20,sets:2,reps:10,note:""},
+  {id:17,date:"2026-05-24",exercise:"坐姿划船",weight:17.5,sets:3,reps:15,note:"最後一組13下"},
   {id:18,date:"2026-05-24",exercise:"滑輪下拉",weight:19,sets:3,reps:15,note:"最後一組差點撐完"},
 ];
+// 標準動作名稱對照表
+const EX_NORMALIZE={'髖外展':'坐姿髖外展','內夾':'坐姿內夾','划船':'坐姿划船','深蹲':'高腳杯深蹲','壺鈴深蹲':'高腳杯深蹲','硬舉':'壺鈴硬舉'};
+function normalizeTExercises(){
+  let changed=false;
+  tR.forEach(r=>{if(EX_NORMALIZE[r.exercise]){r.exercise=EX_NORMALIZE[r.exercise];changed=true;}});
+  return changed;
+}
 const WSEED=[
   {id:1,date:"2026-04-02",weight:47.6,fat:34.2,muscle:null,note:"InBody 230 健身工廠（幾乎無運動，準確基準值）"},
   {id:2,date:"2026-05-22",weight:48.5,fat:23.8,muscle:34.9,note:"晚間量，小米體脂機"},
@@ -790,10 +797,12 @@ function initAuth(){
       } else {
         let needSync=false;
         if(tR.length===0){tR.push(...TSEED.map(r=>({...r})));tN=200+TSEED.length;needSync=true;}
-        // 補入缺少的歷史紀錄（按日期比對）
+        // 補入缺少的體重歷史紀錄
         const existingWDates=new Set(wR.map(r=>r.date));
         const missingW=WSEED.filter(r=>!existingWDates.has(r.date));
         if(missingW.length){missingW.forEach(r=>wR.push({...r,id:wN++}));needSync=true;}
+        // 修正舊的動作名稱
+        if(normalizeTExercises())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
       renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
@@ -1354,7 +1363,62 @@ function renderCalDetail(ds){
   else h+=`<div class="det-sec"><div class="det-icon">💪</div><div class="det-body" style="color:var(--t2)">無運動紀錄</div></div>`;
   // Health
   if(hr.length){h+=`<div class="det-sec"><div class="det-icon">💊</div><div class="det-body">${hr.map(r=>`<div>${r.name}${r.amount?' '+r.amount:''} ・${r.timing}${r.note?`<br><span style="color:var(--t2);font-size:12px">${r.note}</span>`:''}</div>`).join('')}</div></div>`;}
+  // 每日總結
+  h+=dayInsight(ds,sr,dr,er);
   document.getElementById('calDetailBody').innerHTML=h;
+}
+function dayInsight(ds,sr,dr,er){
+  const tips=[];
+  let good=0,bad=0;
+  // Sleep
+  if(sr&&sr.h!=null){
+    if(sr.h>=7){tips.push({icon:'😴',msg:`睡眠充足（${fh(sr.h)}），恢復狀態良好`,cls:'good'});good++;}
+    else if(sr.h>=5.5){tips.push({icon:'😴',msg:`睡眠略少（${fh(sr.h)}），注意別讓睡眠債累積`,cls:'warn'});}
+    else{tips.push({icon:'😴',msg:`睡眠嚴重不足（${fh(sr.h)}），高強度訓練不建議，優先補眠`,cls:'bad'});bad++;}
+  }
+  // Diet
+  if(dr&&dr.cMin){
+    const cal=mid(dr),fb=dietFeedback(cal);
+    if(fb.cls==='good'){tips.push({icon:'🍽',msg:`熱量達標（${Math.round(cal)} kcal），飲食控制良好`,cls:'good'});good++;}
+    else if(fb.cls==='warn'&&cal>CAL_MAX){tips.push({icon:'🍽',msg:`熱量略超（${Math.round(cal)} kcal），留意手搖飲`,cls:'warn'});}
+    else if(fb.cls==='warn'&&cal<CAL_MIN){tips.push({icon:'🍽',msg:`熱量略低（${Math.round(cal)} kcal），確認蛋白質是否足夠`,cls:'warn'});}
+    else if(fb.cls==='bad'&&cal>CAL_HIGH){tips.push({icon:'🍽',msg:`熱量超標（${Math.round(cal)} kcal），明天均衡回來`,cls:'bad'});bad++;}
+    else{tips.push({icon:'🍽',msg:`熱量偏低（${Math.round(cal)} kcal），影響訓練恢復`,cls:'bad'});bad++;}
+    if(dr.prot!=null){
+      if(dr.prot>=80){tips.push({icon:'💪',msg:`蛋白質達標（${dr.prot}g），肌肉合成支持良好`,cls:'good'});good++;}
+      else if(dr.prot<60){tips.push({icon:'⚠️',msg:`蛋白質不足（${dr.prot}g），目標 80-100g`,cls:'bad'});bad++;}
+    }
+    if(dr.water!=null){
+      const wp=calWaterPill(dr.water);
+      if(dr.water>=WATER_TARGET){tips.push({icon:'💧',msg:`水分達標（${dr.water}ml）`,cls:'good'});good++;}
+      else if(dr.water<1000){tips.push({icon:'💧',msg:`水喝太少（${dr.water}ml），容易頭痛頭暈`,cls:'bad'});bad++;}
+    }
+  }
+  // Exercise
+  if(er){
+    const actTypes=['重訓','有氧','教練課','居家','混合'];
+    if(actTypes.includes(er.type)){tips.push({icon:'🏋',msg:`有訓練（${er.type}／${er.int}強度），繼續保持`,cls:'good'});good++;}
+    else{tips.push({icon:'😌',msg:`今天是休息日，讓肌肉好好修復`,cls:'neutral'});}
+  }
+  if(!tips.length)return'';
+  // Overall sentence
+  const total=good+bad;
+  let overall='';
+  if(bad===0&&good>=3)overall='🌟 今天各項都做得很好！';
+  else if(bad===0&&good>=1)overall='✓ 今天整體不錯，繼續維持';
+  else if(bad>=2)overall='今天狀況比較差，不要氣餒——明天重新來過就好';
+  else if(bad===1&&good>=2)overall='整體還行，有一個地方可以加強';
+  else overall='普通的一天，持續記錄就有進步';
+  const cc2={good:'#15803d',warn:'#b45309',bad:'#b91c1c',neutral:'#6b7280'};
+  const bg2={good:'#f0fdf4',warn:'#fef9c3',bad:'#fef2f2',neutral:'#f3f4f6'};
+  return`<div style="margin-top:10px;background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 14px">
+    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">💡 今日總結</div>
+    ${tips.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+      <span style="font-size:13px">${t.icon}</span>
+      <span style="font-size:12px;padding:2px 8px;border-radius:8px;background:${bg2[t.cls]};color:${cc2[t.cls]}">${t.msg}</span>
+    </div>`).join('')}
+    <div style="font-size:12px;font-weight:600;color:var(--t);margin-top:8px;padding-top:8px;border-top:1px solid #e0e7ff">${overall}</div>
+  </div>`;
 }
 
 // ── HEALTH ─────────────────────────────────────────────────────────────────
