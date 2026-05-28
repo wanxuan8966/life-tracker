@@ -300,6 +300,35 @@ tbody td{padding:10px;vertical-align:top}
         <div class="cd" id="sCalcD">輸入時間後自動計算</div>
         <div class="fg"><label>實睡時數（可覆蓋自動計算）</label><input type="number" id="sHrs" min="0" max="24" step="0.25" placeholder="例：7.5"></div>
         <div class="fg"><label>備註</label><textarea id="sNote" rows="2" placeholder="今天睡得怎麼樣…"></textarea></div>
+        <div style="border-top:1px solid var(--bd);padding-top:10px;margin-top:2px">
+          <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">隔天回填精神狀態</div>
+          <div class="r2">
+            <div class="fg"><label>精神狀態</label>
+              <select id="sEnergy">
+                <option value="">— 未填</option>
+                <option value="1">⭐ 1 整天廢</option>
+                <option value="2">⭐⭐ 2 比較累</option>
+                <option value="3">⭐⭐⭐ 3 普通</option>
+                <option value="4">⭐⭐⭐⭐ 4 狀態不錯</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 全天好</option>
+              </select>
+            </div>
+            <div class="fg"><label>能量最低點</label>
+              <select id="sLowPt">
+                <option value="">— 未填</option>
+                <option value="無">沒有特別低</option>
+                <option value="早上">早上</option>
+                <option value="下午3-4點">下午 3–4 點</option>
+                <option value="傍晚下班後">傍晚下班後</option>
+                <option value="全天都低">全天都低</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:500;text-transform:none;letter-spacing:0">
+            <input type="checkbox" id="sHeadache" style="width:15px;height:15px;accent-color:var(--p)">
+            今天有頭暈 / 頭痛
+          </label></div>
+        </div>
         <button type="submit" class="bm" id="sBtn">新增</button>
         <button type="button" class="bc" id="sCan" onclick="sReset()">取消編輯</button>
       </form>
@@ -317,7 +346,7 @@ tbody td{padding:10px;vertical-align:top}
     </div>
   </div>
   <div class="card"><h2>歷史紀錄</h2><div class="tw"><table>
-    <thead><tr><th>日期</th><th>睡覺</th><th>起床</th><th>實睡</th><th>品質</th><th>備註</th><th></th></tr></thead>
+    <thead><tr><th>日期</th><th>睡覺</th><th>起床</th><th>實睡</th><th>品質</th><th>精神</th><th>低谷</th><th>備註</th><th></th></tr></thead>
     <tbody id="sTbody"></tbody>
   </table></div></div>
 </div>
@@ -915,19 +944,20 @@ function sCalc(){
 function sSub(e){
   e.preventDefault();
   const id=document.getElementById('sId').value;
-  const r={id:id?+id:sN++,date:document.getElementById('sDate').value,s:document.getElementById('sSleep').value,w:document.getElementById('sWake').value,h:document.getElementById('sHrs').value?parseFloat(document.getElementById('sHrs').value):ch(document.getElementById('sSleep').value,document.getElementById('sWake').value),note:document.getElementById('sNote').value.trim()};
+  const sEn=document.getElementById('sEnergy').value;
+  const r={id:id?+id:sN++,date:document.getElementById('sDate').value,s:document.getElementById('sSleep').value,w:document.getElementById('sWake').value,h:document.getElementById('sHrs').value?parseFloat(document.getElementById('sHrs').value):ch(document.getElementById('sSleep').value,document.getElementById('sWake').value),note:document.getElementById('sNote').value.trim(),energy:sEn?+sEn:null,lowPt:document.getElementById('sLowPt').value||null,headache:document.getElementById('sHeadache').checked};
   if(id){const i=sR.findIndex(x=>x.id===+id);if(i!==-1)sR[i]=r;}else sR.push(r);
   save();renderS();sReset();
 }
 function sEdit(id){
   const r=sR.find(x=>x.id===id);if(!r)return;
-  document.getElementById('sId').value=id;document.getElementById('sDate').value=r.date;document.getElementById('sSleep').value=r.s||'';document.getElementById('sWake').value=r.w||'';document.getElementById('sHrs').value=r.h!=null?r.h:'';document.getElementById('sNote').value=r.note||'';
+  document.getElementById('sId').value=id;document.getElementById('sDate').value=r.date;document.getElementById('sSleep').value=r.s||'';document.getElementById('sWake').value=r.w||'';document.getElementById('sHrs').value=r.h!=null?r.h:'';document.getElementById('sNote').value=r.note||'';document.getElementById('sEnergy').value=r.energy||'';document.getElementById('sLowPt').value=r.lowPt||'';document.getElementById('sHeadache').checked=r.headache||false;
   document.getElementById('sft').textContent='✏️ 編輯睡眠紀錄';document.getElementById('sBtn').textContent='儲存';document.getElementById('sCan').style.display='block';
   sCalc();flashEdit('sForm');
 }
 function sDel(id){if(!confirm('確定刪除？'))return;sR=sR.filter(x=>x.id!==id);save();renderS();}
 function sReset(){
-  document.getElementById('sId').value='';document.getElementById('sForm').reset();document.getElementById('sDate').value=today();
+  document.getElementById('sId').value='';document.getElementById('sForm').reset();document.getElementById('sDate').value=today();document.getElementById('sEnergy').value='';document.getElementById('sLowPt').value='';document.getElementById('sHeadache').checked=false;
   document.getElementById('sft').textContent='＋ 新增睡眠紀錄';document.getElementById('sBtn').textContent='新增';document.getElementById('sCan').style.display='none';
   const el=document.getElementById('sCalcD');el.textContent='輸入時間後自動計算';el.style.background='';el.style.color='';
 }
@@ -962,7 +992,9 @@ function rSTable(){
     <td style="font-weight:500;white-space:nowrap">${fd(r.date)}</td><td>${r.s||'—'}</td><td>${r.w||'—'}</td>
     <td style="font-weight:700;color:${q.t}">${fh(r.h)}</td>
     <td style="white-space:nowrap"><span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;color:${q.t}"><span style="width:8px;height:8px;border-radius:50%;background:${q.bg};display:inline-block"></span>${q.l}</span></td>
-    <td style="color:#6b7280;font-size:13px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.note||''}">${r.note||'—'}</td>
+    <td style="white-space:nowrap;font-size:13px">${r.energy?'⭐'.repeat(r.energy)+(r.headache?' 🤕':''):'—'}</td>
+    <td style="font-size:13px;color:var(--t2);white-space:nowrap">${r.lowPt||'—'}</td>
+    <td style="color:#6b7280;font-size:13px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.note||''}">${r.note||'—'}</td>
     <td><button class="act" onclick="sEdit(${r.id})">✏️</button><button class="act" onclick="sDel(${r.id})">🗑</button></td>
   </tr>`;}).join('');
 }
@@ -1376,7 +1408,7 @@ function renderCalDetail(ds){
   const sr=sR.find(r=>r.date===ds),dr=dR.find(r=>r.date===ds),er=eR.find(r=>r.date===ds),hr=hR.filter(r=>r.date===ds);
   let h='';
   // Sleep
-  if(sr){const q=sq(sr.h);h+=`<div class="det-sec"><div class="det-icon">😴</div><div class="det-body">${sr.s||'—'} → ${sr.w||'—'} ｜ <b style="color:${q.t}">${fh(sr.h)}</b> <span class="badge" style="background:${q.bg}20;color:${q.t};font-size:11px">${q.l}</span>${sr.note?`<br><span style="color:var(--t2);font-size:12px">${sr.note}</span>`:''}</div></div>`;}
+  if(sr){const q=sq(sr.h);h+=`<div class="det-sec"><div class="det-icon">😴</div><div class="det-body">${sr.s||'—'} → ${sr.w||'—'} ｜ <b style="color:${q.t}">${fh(sr.h)}</b> <span class="badge" style="background:${q.bg}20;color:${q.t};font-size:11px">${q.l}</span>${sr.energy?` ｜ ${'⭐'.repeat(sr.energy)} 精神${sr.energy}分`:''}${sr.headache?' ｜ 🤕 有頭暈':''}${sr.lowPt?`<br><span style="font-size:12px;color:var(--t2)">能量低谷：${sr.lowPt}</span>`:''}${sr.note?`<br><span style="color:var(--t2);font-size:12px">${sr.note}</span>`:''}</div></div>`;}
   else h+=`<div class="det-sec"><div class="det-icon">😴</div><div class="det-body" style="color:var(--t2)">無睡眠紀錄</div></div>`;
   // Diet
   if(dr){h+=`<div class="det-sec"><div class="det-icon">🍽</div><div class="det-body"><b style="color:${cc(mid(dr))}">${fcal(dr)} kcal</b>${dr.prot?` ・蛋白質 <b>${dr.prot}g</b>`:''}${dr.water?` ・水 ${dr.water}ml`:''}${dr.details?`<div class="pre" style="margin-top:5px">${dr.details}</div>`:''}</div></div>`;}
