@@ -952,7 +952,7 @@ function confirmAI(){
 // ── WEEKLY TIPS ────────────────────────────────────────────────────────────
 function renderTips(){
   const tips=[];
-  const w7=dAgo(6);
+  const w7=wkStart(); // 本週一開始
 
   // 睡眠分析
   const sl7=srt(sR).filter(r=>r.h!=null&&r.date>=w7);
