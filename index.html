@@ -57,6 +57,47 @@ tbody td{padding:10px;vertical-align:top}
 .pre{white-space:pre-line;font-size:13px;color:var(--t2);max-height:80px;overflow-y:auto;line-height:1.4}
 .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600}
 @media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+/* ── 手機版 ── */
+@media(max-width:640px){
+  /* Header：導覽列可橫向滾動 */
+  header{flex-wrap:wrap;padding:0 12px;gap:0}
+  .brand{font-size:15px;padding:10px 0;flex:1}
+  .hdr-r{gap:4px;padding:6px 0}
+  .hdr-r .bsm{padding:6px 10px;font-size:12px}
+  nav{width:100%;border-top:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;display:flex;gap:0}
+  nav::-webkit-scrollbar{display:none}
+  .tb{padding:8px 12px;font-size:13px;white-space:nowrap;flex-shrink:0}
+  /* Layout */
+  .page{padding:10px 8px;gap:10px}
+  .sg{grid-template-columns:repeat(2,1fr);gap:8px}
+  .sc{padding:12px 12px}
+  .sv{font-size:20px}
+  .sl{font-size:10px}
+  /* Calendar */
+  .cal-wrap{padding:12px 10px}
+  .cal-cell{min-height:58px;padding:3px 3px;gap:1px}
+  .cal-num{font-size:11px}
+  .cal-row{font-size:9px;padding:1px 3px;border-radius:3px;margin-bottom:1px}
+  .cal-leg{gap:4px}
+  .cal-leg-item,.cal-leg-title{font-size:9px}
+  .cal-detail{padding:12px 14px}
+  /* Cards */
+  .card{padding:14px 14px}
+  .card h2{font-size:14px}
+  .r2{grid-template-columns:1fr}
+  /* Tables */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  tbody td{font-size:12px;padding:8px 6px}
+  thead th{font-size:10px;padding:6px 6px}
+  /* Modal：從底部滑上 */
+  .overlay{align-items:flex-end;padding:0}
+  .modal{border-radius:16px 16px 0 0;max-height:90vh;width:100%;max-width:100%}
+  /* Insight boxes */
+  .insight{padding:10px 12px}
+  /* Tips bar */
+  .tips-bar{padding:8px 12px}
+  .tip{font-size:11px;padding:3px 10px}
+}
 /* ── AI Modal ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal{background:var(--card);border-radius:16px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
