@@ -368,9 +368,10 @@ tbody td{padding:10px;vertical-align:top}
         <input type="hidden" id="dId">
         <div class="fg"><label>日期</label><input type="date" id="dDate" required></div>
         <div class="r2">
-          <div class="fg"><label>熱量下限（kcal）</label><input type="number" id="dCMin" min="0" step="1" placeholder="例：1400"></div>
-          <div class="fg"><label>熱量上限（空=同左）</label><input type="number" id="dCMax" min="0" step="1" placeholder="例：1800"></div>
+          <div class="fg"><label>熱量（kcal）</label><input type="number" id="dCMin" min="0" step="1" placeholder="例：1742"></div>
+          <div class="fg"><label>上限（選填，不確定時用）</label><input type="number" id="dCMax" min="0" step="1" placeholder="例：1900"></div>
         </div>
+        <div style="font-size:12px;color:var(--t2);margin:-6px 0 8px;line-height:1.5">💬 不確定熱量？點右上角「快速輸入」描述吃了什麼，AI 幫你算</div>
         <div class="r2">
           <div class="fg"><label>蛋白質（g）</label><input type="number" id="dProt" min="0" step="1" placeholder="例：80"></div>
           <div class="fg"><label>飲水量（ml）</label><input type="number" id="dWater" min="0" step="50" placeholder="例：2000"></div>
