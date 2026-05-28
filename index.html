@@ -57,46 +57,78 @@ tbody td{padding:10px;vertical-align:top}
 .pre{white-space:pre-line;font-size:13px;color:var(--t2);max-height:80px;overflow-y:auto;line-height:1.4}
 .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600}
 @media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
-/* ── 手機版 ── */
+/* ── 手機版（640px 以下）── */
 @media(max-width:640px){
-  /* Header：導覽列可橫向滾動 */
-  header{flex-wrap:wrap;padding:0 12px;gap:0}
-  .brand{font-size:15px;padding:10px 0;flex:1}
-  .hdr-r{gap:4px;padding:6px 0}
-  .hdr-r .bsm{padding:6px 10px;font-size:12px}
-  nav{width:100%;border-top:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;display:flex;gap:0}
+  /* 防止橫向溢出 */
+  body{overflow-x:hidden}
+
+  /* ─ Header ─ */
+  header{flex-wrap:wrap;padding:0 12px;min-height:unset}
+  .brand{font-size:15px;padding:8px 0;flex:1}
+  .hdr-r{gap:4px;padding:6px 0;flex-wrap:wrap}
+  .hdr-r .bsm{font-size:11px;padding:5px 8px}
+  nav{width:100%;order:3;overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;border-top:1px solid var(--bd);
+      display:flex;gap:0;align-items:stretch}
   nav::-webkit-scrollbar{display:none}
-  .tb{padding:8px 12px;font-size:13px;white-space:nowrap;flex-shrink:0}
-  /* Layout */
-  .page{padding:10px 8px;gap:10px}
+  .tb{white-space:nowrap;flex-shrink:0;font-size:12px;padding:9px 12px}
+
+  /* ─ 頁面 ─ */
+  .page{padding:10px 8px;gap:10px;max-width:100%}
+
+  /* ─ Stats 卡片 2×2 ─ */
   .sg{grid-template-columns:repeat(2,1fr);gap:8px}
-  .sc{padding:12px 12px}
-  .sv{font-size:20px}
+  .sc{padding:10px 12px}
+  .sv{font-size:18px}
   .sl{font-size:10px}
-  /* Calendar */
-  .cal-wrap{padding:12px 10px}
-  .cal-cell{min-height:58px;padding:3px 3px;gap:1px}
-  .cal-num{font-size:11px}
-  .cal-row{font-size:9px;padding:1px 3px;border-radius:3px;margin-bottom:1px}
-  .cal-leg{gap:4px}
-  .cal-leg-item,.cal-leg-title{font-size:9px}
+  .ss{font-size:11px}
+
+  /* ─ 日曆：簡化成彩色色條，隱藏文字 ─ */
+  .cal-wrap{padding:10px 8px}
+  .cal-nav h2{font-size:14px}
+  .cal-cell{min-height:52px;padding:3px 2px;gap:1px}
+  .cal-num{font-size:11px;margin-bottom:2px}
+  .cal-row{font-size:0!important;height:5px;padding:0;border-radius:3px;
+           margin-bottom:2px;line-height:1}
+  .cal-row.na{display:none}
+  .cal-leg{flex-direction:column;gap:3px}
+  .cal-leg-section{flex-wrap:wrap;gap:4px}
+  .cal-leg-title,.cal-leg-item{font-size:10px}
   .cal-detail{padding:12px 14px}
-  /* Cards */
-  .card{padding:14px 14px}
-  .card h2{font-size:14px}
+  .det-body{font-size:12px}
+
+  /* ─ 雙欄 → 單欄 ─ */
+  .g2{grid-template-columns:1fr;gap:10px}
   .r2{grid-template-columns:1fr}
-  /* Tables */
+
+  /* ─ 卡片 ─ */
+  .card{padding:14px 14px;border-radius:10px}
+  .card h2{font-size:14px;margin-bottom:10px}
+  .cw{height:190px}
+
+  /* ─ 表格：可橫向滑動 ─ */
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  tbody td{font-size:12px;padding:8px 6px}
-  thead th{font-size:10px;padding:6px 6px}
-  /* Modal：從底部滑上 */
+  table{min-width:500px}
+  tbody td{padding:8px 8px;font-size:12px}
+  thead th{font-size:10px;padding:6px 8px}
+
+  /* ─ Modal：從底部滑入 ─ */
   .overlay{align-items:flex-end;padding:0}
-  .modal{border-radius:16px 16px 0 0;max-height:90vh;width:100%;max-width:100%}
-  /* Insight boxes */
-  .insight{padding:10px 12px}
-  /* Tips bar */
-  .tips-bar{padding:8px 12px}
-  .tip{font-size:11px;padding:3px 10px}
+  .modal{border-radius:16px 16px 0 0;max-height:88vh;
+         width:100%;max-width:100%;margin:0}
+  .mhd{padding:16px 18px 0}
+  .mbody{padding:14px 18px 28px}
+
+  /* ─ Tips bar ─ */
+  .tips-bar{padding:8px 12px;gap:8px;flex-wrap:wrap}
+  .tip{font-size:11px;padding:3px 9px}
+
+  /* ─ 其他 ─ */
+  .badge,.tag{font-size:11px;padding:2px 6px}
+  .bm{font-size:14px;padding:11px}
+  .fg label{font-size:10px}
+  .fg input,.fg select,.fg textarea{font-size:16px} /* iOS 防放大 */
+  .pre{max-height:60px}
 }
 /* ── AI Modal ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
