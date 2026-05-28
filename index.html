@@ -111,8 +111,8 @@ tbody td{padding:10px;vertical-align:top}
 .cal-cell.sel{background:var(--pl);border-color:var(--p)}
 .cal-cell.empty{cursor:default;pointer-events:none;min-height:82px}
 .cal-num{font-size:12px;font-weight:700;color:var(--t);line-height:1;margin-bottom:1px}
-.cal-row{font-size:10px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-row.na{color:#d1d5db}
+.cal-row{font-size:10px;font-weight:600;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 5px;border-radius:4px;margin-bottom:2px}
+.cal-row.na{color:#c9cacb;font-weight:400}
 .cal-dots{display:flex;gap:2px;justify-content:center}
 .cal-dot{width:7px;height:7px;border-radius:50%}
 .cal-leg{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
@@ -134,6 +134,19 @@ tbody td{padding:10px;vertical-align:top}
 .tip.good{background:rgba(34,197,94,.25)}
 .tip.warn{background:rgba(251,191,36,.25)}
 .tip.bad{background:rgba(239,68,68,.25)}
+/* ── Training Tab ── */
+.ex-sel{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;font-size:14px;color:var(--t);background:#fafafa;font-family:inherit;margin-bottom:12px}
+.ex-sel:focus{outline:none;border-color:var(--p);background:#fff}
+.insight{background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 14px;font-size:13px}
+.insight-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid #e0e7ff}
+.insight-item:last-child{border-bottom:none}
+.insight-icon{font-size:15px;flex-shrink:0;margin-top:2px}
+.insight-good{color:#15803d;font-weight:600}
+.insight-bad{color:#b91c1c;font-weight:600}
+.ac-wrap{position:relative}
+.ac-drop{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--bd);border-radius:8px;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,.1);max-height:160px;overflow-y:auto}
+.ac-item{padding:8px 12px;cursor:pointer;font-size:14px}
+.ac-item:hover{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -146,6 +159,7 @@ tbody td{padding:10px;vertical-align:top}
     <button class="tb" data-tab="diet">🍽 飲食</button>
     <button class="tb" data-tab="ex">💪 運動</button>
     <button class="tb" data-tab="health">💊 健康</button>
+    <button class="tb" data-tab="train">🏋 訓練紀錄</button>
   </nav>
   <div class="hdr-r">
     <div id="authUI"></div>
@@ -232,19 +246,26 @@ tbody td{padding:10px;vertical-align:top}
     </div>
     <div class="cal-leg" style="margin-top:14px">
       <div class="cal-leg-section">
-        <span class="cal-leg-title">😴 顏色</span>
-        <span class="cal-leg-item" style="color:#ef4444">■ &lt;5h</span>
-        <span class="cal-leg-item" style="color:#f97316">■ 5–6.5h</span>
-        <span class="cal-leg-item" style="color:#eab308">■ 6.5–7h</span>
-        <span class="cal-leg-item" style="color:#22c55e">■ 7–9h</span>
-        <span class="cal-leg-item" style="color:#a855f7">■ &gt;9h</span>
+        <span class="cal-leg-title">😴 睡眠</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#c4b5fd;vertical-align:middle;margin-right:2px"></span>&lt;5h</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#a78bfa;vertical-align:middle;margin-right:2px"></span>5–7h</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#7c3aed;vertical-align:middle;margin-right:2px"></span>7–9h</span>
       </div>
       <div class="cal-leg-section" style="margin-top:4px">
-        <span class="cal-leg-title">🍽 顏色</span>
-        <span class="cal-leg-item" style="color:#22c55e">■ &lt;1500</span>
-        <span class="cal-leg-item" style="color:#eab308">■ 1500–2000</span>
-        <span class="cal-leg-item" style="color:#f97316">■ 2000–2500</span>
-        <span class="cal-leg-item" style="color:#ef4444">■ &gt;2500</span>
+        <span class="cal-leg-title">🍽 飲食</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#fbcfe8;vertical-align:middle;margin-right:2px"></span>&lt;1500</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#f9a8d4;vertical-align:middle;margin-right:2px"></span>1500–2000</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#ec4899;vertical-align:middle;margin-right:2px"></span>2000–2500</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#be185d;vertical-align:middle;margin-right:2px"></span>&gt;2500</span>
+      </div>
+      <div class="cal-leg-section" style="margin-top:4px">
+        <span class="cal-leg-title">💪 運動</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#fde047;vertical-align:middle;margin-right:2px"></span>低</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#eab308;vertical-align:middle;margin-right:2px"></span>中</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#ca8a04;vertical-align:middle;margin-right:2px"></span>高</span>
+        <span class="cal-leg-title" style="margin-left:8px">💧 水分</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#bae6fd;vertical-align:middle;margin-right:2px"></span>&lt;50%</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#0369a1;vertical-align:middle;margin-right:2px"></span>達標 ✓</span>
       </div>
     </div>
   </div>
@@ -435,6 +456,78 @@ tbody td{padding:10px;vertical-align:top}
 </div>
 </div>
 
+<!-- ══ TRAIN PLAN MODAL ══ -->
+<div class="overlay" id="planOverlay" style="display:none" onclick="if(event.target===this)closePlan()">
+<div class="modal">
+  <div class="mhd">
+    <h2>📋 今日訓練菜單建議</h2>
+    <button onclick="closePlan()">✕</button>
+  </div>
+  <div class="mbody">
+    <div style="background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">今日狀態</div>
+      <div id="planReadiness" style="font-size:13px;line-height:1.6"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em">建議動作（依訓練間隔排序）</div>
+    <div id="planList" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div style="font-size:12px;color:#92400e;background:#fef9c3;border-radius:8px;padding:10px 12px;line-height:1.5">
+      💡 菜單依你的歷史紀錄產生。暖身後若感覺沉重，以完成組數為主，不強求加重。
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ TRAINING ══ -->
+<div id="tab-train" class="tab">
+<div class="page">
+  <div class="sg">
+    <div class="sc"><div class="sl">動作種類</div><div class="sv" id="ts1">—</div><div class="ss">已追蹤</div></div>
+    <div class="sc"><div class="sl">本週訓練組數</div><div class="sv" id="ts2">—</div><div class="ss" id="ts2s"></div></div>
+    <div class="sc"><div class="sl">最近突破</div><div class="sv" id="ts3" style="font-size:14px">—</div><div class="ss" id="ts3d"></div></div>
+    <div class="sc"><div class="sl">總紀錄筆數</div><div class="sv" id="ts4">—</div><div class="ss">組次紀錄</div></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:8px">
+    <button class="bsm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:9px 16px;font-size:14px" onclick="genTrainPlan('gym')">🏋 重訓菜單</button>
+    <button class="bsm" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);color:#fff;padding:9px 16px;font-size:14px" onclick="genTrainPlan('home')">🏠 居家菜單</button>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <h2 id="tft">＋ 新增訓練紀錄</h2>
+      <form id="tForm" onsubmit="tSub(event)">
+        <input type="hidden" id="tId">
+        <div class="fg"><label>日期</label><input type="date" id="tDate" required></div>
+        <div class="fg"><label>動作名稱</label>
+          <div class="ac-wrap">
+            <input type="text" id="tEx" placeholder="例：划船、深蹲、臀推" required autocomplete="off" oninput="tAuto()" onblur="setTimeout(hideAC,150)">
+            <div class="ac-drop" id="acDrop" style="display:none"></div>
+          </div>
+        </div>
+        <div class="r2">
+          <div class="fg"><label>重量（kg）</label><input type="number" id="tWt" min="0" step="0.5" placeholder="例：17.5" required></div>
+          <div class="fg"><label>組數</label><input type="number" id="tSets" min="1" step="1" placeholder="例：3" required></div>
+        </div>
+        <div class="r2">
+          <div class="fg"><label>每組次數</label><input type="number" id="tReps" min="1" step="1" placeholder="例：15" required></div>
+          <div class="fg"><label>備註（選填）</label><input type="text" id="tNote" placeholder="例：最後一組做不完"></div>
+        </div>
+        <button type="submit" class="bm" id="tBtn">新增</button>
+        <button type="button" class="bc" id="tCan" onclick="tReset()">取消編輯</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>重量趨勢</h2>
+      <select class="ex-sel" id="tExSel" onchange="rTChart()"></select>
+      <div class="cw" style="height:210px"><canvas id="tChart"></canvas></div>
+      <div id="tInsight" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="card"><h2>歷史紀錄</h2><div class="tw"><table>
+    <thead><tr><th>日期</th><th>動作</th><th>重量</th><th>組×次</th><th>備註</th><th></th></tr></thead>
+    <tbody id="tTbody"></tbody>
+  </table></div></div>
+</div>
+</div>
+
 <script>
 // ── FIREBASE ───────────────────────────────────────────────────────────────
 const FB_CONFIG = {
@@ -522,11 +615,32 @@ const ESEED=[
   {id:14,date:"2026-05-28",type:"有氧",int:"高",
    details:"跳床有氧課 19:10–20:10（60分鐘）",note:"頂著睡眠不足撐完整場，大量出汗"},
 ];
+const TSEED=[
+  {id:1,date:"2026-05-15",exercise:"髖外展",weight:20,sets:3,reps:15,note:""},
+  {id:2,date:"2026-05-15",exercise:"深蹲",weight:8,sets:3,reps:10,note:""},
+  {id:3,date:"2026-05-15",exercise:"臀推",weight:6,sets:3,reps:10,note:"槓+左右各6kg"},
+  {id:4,date:"2026-05-15",exercise:"划船",weight:12,sets:3,reps:10,note:""},
+  {id:5,date:"2026-05-15",exercise:"滑輪下拉",weight:14.5,sets:3,reps:10,note:""},
+  {id:6,date:"2026-05-18",exercise:"滑輪下拉",weight:17,sets:3,reps:10,note:"重量進步"},
+  {id:7,date:"2026-05-18",exercise:"划船",weight:14.5,sets:3,reps:10,note:""},
+  {id:8,date:"2026-05-18",exercise:"髖外展",weight:30,sets:3,reps:10,note:""},
+  {id:9,date:"2026-05-18",exercise:"內夾",weight:30,sets:3,reps:10,note:""},
+  {id:10,date:"2026-05-23",exercise:"坐姿內夾",weight:14,sets:3,reps:15,note:""},
+  {id:11,date:"2026-05-23",exercise:"坐姿髖外展",weight:21,sets:3,reps:15,note:""},
+  {id:12,date:"2026-05-23",exercise:"壺鈴硬舉",weight:20,sets:2,reps:15,note:""},
+  {id:13,date:"2026-05-23",exercise:"高腳杯深蹲",weight:12,sets:1,reps:15,note:""},
+  {id:14,date:"2026-05-23",exercise:"臀推",weight:22.6,sets:1,reps:10,note:"槓+左右各11.3kg"},
+  {id:15,date:"2026-05-24",exercise:"髖外展",weight:25,sets:3,reps:10,note:""},
+  {id:16,date:"2026-05-24",exercise:"內夾",weight:20,sets:2,reps:10,note:""},
+  {id:17,date:"2026-05-24",exercise:"划船",weight:17.5,sets:3,reps:15,note:"最後一組13下"},
+  {id:18,date:"2026-05-24",exercise:"滑輪下拉",weight:19,sets:3,reps:15,note:"最後一組差點撐完"},
+];
 
 // ── STORAGE ────────────────────────────────────────────────────────────────
-const SK='lt_s',DK='lt_d',EK='lt_e',HK='lt_h';
-let sR=[],dR=[],eR=[],hR=[],sN=200,dN=200,eN=200,hN=200;
-let sC=null,dC=null,eC=null;
+const SK='lt_s',DK='lt_d',EK='lt_e',HK='lt_h',TK='lt_t';
+let sR=[],dR=[],eR=[],hR=[],tR=[],sN=200,dN=200,eN=200,hN=200,tN=200;
+let sC=null,dC=null,eC=null,tC=null;
+const WATER_TARGET=1700;
 
 function loadLocal(){
   function L(key,seed,arr,n){
@@ -535,13 +649,14 @@ function loadLocal(){
     localStorage.setItem(key,JSON.stringify({records:arr,nextId:n}));
     return n;
   }
-  sN=L(SK,SSEED,sR,200);dN=L(DK,DSEED,dR,200);eN=L(EK,ESEED,eR,200);hN=L(HK,[],hR,200);
+  sN=L(SK,SSEED,sR,200);dN=L(DK,DSEED,dR,200);eN=L(EK,ESEED,eR,200);hN=L(HK,[],hR,200);tN=L(TK,TSEED,tR,200);
 }
 function saveLocal(){
   localStorage.setItem(SK,JSON.stringify({records:sR,nextId:sN}));
   localStorage.setItem(DK,JSON.stringify({records:dR,nextId:dN}));
   localStorage.setItem(EK,JSON.stringify({records:eR,nextId:eN}));
   localStorage.setItem(HK,JSON.stringify({records:hR,nextId:hN}));
+  localStorage.setItem(TK,JSON.stringify({records:tR,nextId:tN}));
 }
 async function saveCloud(){
   if(!fbUser)return;
@@ -552,6 +667,7 @@ async function saveCloud(){
       diet:{records:dR,nextId:dN},
       exercise:{records:eR,nextId:eN},
       health:{records:hR,nextId:hN},
+      train:{records:tR,nextId:tN},
       updatedAt:Date.now()
     });
     setSyncStatus('☁ 已同步','');
@@ -567,11 +683,12 @@ async function loadCloud(){
     const snap=await fbDB.ref('users/'+fbUser.uid).once('value');
     const d=snap.val();
     if(!d)return false;
-    sR=[];dR=[];eR=[];hR=[];
+    sR=[];dR=[];eR=[];hR=[];tR=[];
     if(d.sleep){sR.push(...(d.sleep.records||[]));sN=d.sleep.nextId||200;}
     if(d.diet){dR.push(...(d.diet.records||[]));dN=d.diet.nextId||200;}
     if(d.exercise){eR.push(...(d.exercise.records||[]));eN=d.exercise.nextId||200;}
     if(d.health){hR.push(...(d.health.records||[]));hN=d.health.nextId||200;}
+    if(d.train){tR.push(...(d.train.records||[]));tN=d.train.nextId||200;}
     saveLocal();
     return true;
   }catch(e){return false;}
@@ -612,7 +729,7 @@ function initAuth(){
         // first login → push local seed data to cloud
         await saveCloud();
       }
-      renderCal();renderS();renderD();renderE();renderH();renderTips();
+      renderCal();renderS();renderD();renderE();renderH();renderT();renderTips();
       setSyncStatus('☁ 已同步','');
     }
   });
@@ -641,6 +758,36 @@ function cc(v){if(!v)return'#9ca3af';if(v<1500)return'#22c55e';if(v<2000)return'
 function ec(t){return{重訓:'#6366f1',有氧:'#f97316',教練課:'#8b5cf6',居家:'#22c55e',混合:'#0ea5e9',休息:'#d1d5db',未記錄:'#e5e7eb'}[t]||'#9ca3af'}
 function iv(i){return{高:3,中:2,低:1,無:0}[i]||0}
 function wkStart(){const n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));return m.toISOString().split('T')[0]}
+function pillTxt(bg){const h=bg.replace('#','');const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return(0.299*r+0.587*g+0.114*b)/255>0.65?'#374151':'#fff';}
+// Calendar pill colors: fixed hue per category, shade = quality
+function calSleepPill(h){
+  if(h==null)return{bg:'#ede9fe',txt:'#7c3aed'};
+  if(h<5)return{bg:'#c4b5fd',txt:'#4c1d95'};
+  if(h<6.5)return{bg:'#a78bfa',txt:'#4c1d95'};
+  if(h<7)return{bg:'#8b5cf6',txt:'#fff'};
+  if(h<=9)return{bg:'#7c3aed',txt:'#fff'};
+  return{bg:'#6d28d9',txt:'#fff'};
+}
+function calDietPill(cal){
+  if(!cal)return{bg:'#fce7f3',txt:'#be185d'};
+  if(cal<1500)return{bg:'#fbcfe8',txt:'#9d174d'};
+  if(cal<2000)return{bg:'#f9a8d4',txt:'#9d174d'};
+  if(cal<2500)return{bg:'#ec4899',txt:'#fff'};
+  return{bg:'#be185d',txt:'#fff'};
+}
+function calExPill(type,intensity){
+  if(type==='休息'||type==='未記錄')return{bg:'#fef9c3',txt:'#854d0e'};
+  const i={高:{bg:'#ca8a04',txt:'#fff'},中:{bg:'#eab308',txt:'#fff'},低:{bg:'#fde047',txt:'#713f12'},無:{bg:'#fef9c3',txt:'#854d0e'}};
+  return i[intensity]||{bg:'#eab308',txt:'#fff'};
+}
+function calWaterPill(w){
+  const r=w/WATER_TARGET;
+  const lbl=r>=1?`✓ ${w}ml`:`${w}/${WATER_TARGET}ml`;
+  if(r>=1)return{bg:'#0369a1',txt:'#fff',lbl};
+  if(r>=0.75)return{bg:'#0284c7',txt:'#fff',lbl};
+  if(r>=0.5)return{bg:'#38bdf8',txt:'#fff',lbl};
+  return{bg:'#bae6fd',txt:'#0369a1',lbl};
+}
 function dAgo(n){const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0]}
 function mid(r){if(!r.cMin)return null;return r.cMax?(r.cMin+r.cMax)/2:r.cMin}
 function fcal(r){if(!r.cMin)return'—';return r.cMax&&r.cMax!==r.cMin?`${r.cMin}–${r.cMax}`:`${r.cMin}`}
@@ -1078,22 +1225,24 @@ function renderCal(){
     const sr=sR.find(r=>r.date===ds),dr=dR.find(r=>r.date===ds),er=eR.find(r=>r.date===ds);
     const sq_=sr?sq(sr.h):{bg:'',t:''};
     const calMid=dr?mid(dr):null;
-    // sleep line
+    // sleep — purple shade by quality
+    const sp=calSleepPill(sr&&sr.h!=null?sr.h:null);
     const sLine=sr&&sr.h!=null
-      ?`<div class="cal-row" style="color:${sq_.t}">😴 ${fh(sr.h)}</div>`
+      ?`<div class="cal-row" style="background:${sp.bg};color:${sp.txt}">😴 ${fh(sr.h)}</div>`
       :`<div class="cal-row na">😴 —</div>`;
-    // diet line
+    // diet — pink shade by calories
+    const dp=calDietPill(calMid);
     const dLine=dr&&calMid
-      ?`<div class="cal-row" style="color:${cc(calMid)}">🍽 ${Math.round(calMid)}kcal</div>`
+      ?`<div class="cal-row" style="background:${dp.bg};color:${dp.txt}">🍽 ${Math.round(calMid)}kcal</div>`
       :`<div class="cal-row na">🍽 —</div>`;
-    // exercise line
+    // exercise — yellow shade by intensity
+    const ep=er?calExPill(er.type,er.int):null;
     const eLine=er
-      ?`<div class="cal-row" style="color:${ec(er.type)}">💪 ${er.type}／${er.int}</div>`
+      ?`<div class="cal-row" style="background:${ep.bg};color:${ep.txt}">💪 ${er.type}</div>`
       :`<div class="cal-row na">💪 —</div>`;
-    // water line
-    const wLine=dr&&dr.water
-      ?`<div class="cal-row" style="color:#0ea5e9">💧 ${dr.water}ml</div>`
-      :'';
+    // water — blue shade by goal ratio
+    let wLine='';
+    if(dr&&dr.water){const wp=calWaterPill(dr.water);wLine=`<div class="cal-row" style="background:${wp.bg};color:${wp.txt}">💧 ${wp.lbl}</div>`;}
     cells.push(`<div class="cal-cell${isT?' today':''}${isSel?' sel':''}" onclick="calClick('${ds}')">
       <div class="cal-num">${d}</div>
       ${sLine}${dLine}${eLine}${wLine}
@@ -1188,6 +1337,241 @@ function rHTable(){
   </tr>`).join('');
 }
 
+// ── TRAINING RECORDS ─────────────────────────────────────────────────────────
+function tSub(e){
+  e.preventDefault();
+  const id=document.getElementById('tId').value;
+  const r={id:id?+id:tN++,date:document.getElementById('tDate').value,exercise:document.getElementById('tEx').value.trim(),weight:parseFloat(document.getElementById('tWt').value),sets:parseInt(document.getElementById('tSets').value),reps:parseInt(document.getElementById('tReps').value),note:document.getElementById('tNote').value.trim()};
+  if(id){const i=tR.findIndex(x=>x.id===+id);if(i!==-1)tR[i]=r;}else tR.push(r);
+  save();renderT();tReset();
+}
+function tEdit(id){
+  const r=tR.find(x=>x.id===id);if(!r)return;
+  document.getElementById('tId').value=id;document.getElementById('tDate').value=r.date;document.getElementById('tEx').value=r.exercise;document.getElementById('tWt').value=r.weight;document.getElementById('tSets').value=r.sets;document.getElementById('tReps').value=r.reps;document.getElementById('tNote').value=r.note||'';
+  document.getElementById('tft').textContent='✏️ 編輯訓練紀錄';document.getElementById('tBtn').textContent='儲存';document.getElementById('tCan').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function tDel(id){if(!confirm('確定刪除？'))return;tR=tR.filter(x=>x.id!==id);save();renderT();}
+function tReset(){
+  document.getElementById('tId').value='';document.getElementById('tForm').reset();document.getElementById('tDate').value=today();
+  document.getElementById('tft').textContent='＋ 新增訓練紀錄';document.getElementById('tBtn').textContent='新增';document.getElementById('tCan').style.display='none';
+}
+function tAuto(){
+  const val=document.getElementById('tEx').value.toLowerCase().trim();
+  const drop=document.getElementById('acDrop');
+  if(!val){drop.style.display='none';return;}
+  const names=[...new Set(tR.map(r=>r.exercise))].filter(n=>n.toLowerCase().includes(val));
+  if(!names.length){drop.style.display='none';return;}
+  drop.innerHTML=names.slice(0,6).map(n=>`<div class="ac-item" onmousedown="pickEx(this)" data-val="${n.replace(/"/g,'&quot;').replace(/</g,'&lt;')}">${n.replace(/</g,'&lt;')}</div>`).join('');
+  drop.style.display='block';
+}
+function pickEx(el){document.getElementById('tEx').value=el.dataset.val;document.getElementById('acDrop').style.display='none';}
+function hideAC(){document.getElementById('acDrop').style.display='none';}
+function daysBetween(d1,d2){return Math.round((new Date(d2+'T00:00:00')-new Date(d1+'T00:00:00'))/86400000);}
+function renderT(){rTStats();rTSelUpdate();rTChart();rTTable();}
+function rTStats(){
+  const exs=[...new Set(tR.map(r=>r.exercise))];
+  document.getElementById('ts1').innerHTML=`${exs.length} <span>種</span>`;
+  const ws=wkStart(),wkT=tR.filter(r=>r.date>=ws),wkSets=wkT.reduce((a,r)=>a+r.sets,0);
+  document.getElementById('ts2').innerHTML=`${wkSets} <span>組</span>`;
+  document.getElementById('ts2s').textContent=wkT.length?`${[...new Set(wkT.map(r=>r.exercise))].length}個動作`:'本週無紀錄';
+  let best=null;
+  exs.forEach(ex=>{
+    const recs=srt(tR.filter(r=>r.exercise===ex));
+    for(let i=1;i<recs.length;i++)if(recs[i].weight>recs[i-1].weight&&(!best||recs[i].date>best.date))best={exercise:ex,weight:recs[i].weight,prev:recs[i-1].weight,date:recs[i].date};
+  });
+  if(best){document.getElementById('ts3').textContent=`${best.exercise} +${(best.weight-best.prev).toFixed(1)}kg`;document.getElementById('ts3d').textContent=fd(best.date);}
+  else document.getElementById('ts3').textContent='—';
+  document.getElementById('ts4').innerHTML=`${tR.length} <span>筆</span>`;
+}
+function rTSelUpdate(){
+  const sel=document.getElementById('tExSel'),cur=sel.value;
+  const exs=[...new Set(srt(tR).map(r=>r.exercise))];
+  sel.innerHTML=exs.length?exs.map(e=>`<option${e===cur?' selected':''}>${e}</option>`).join(''):'<option>（尚無紀錄）</option>';
+  if(!sel.value&&exs.length)sel.value=exs[0];
+}
+function rTChart(){
+  const exName=document.getElementById('tExSel').value;
+  const ctx=document.getElementById('tChart').getContext('2d');
+  if(tC)tC.destroy();
+  document.getElementById('tInsight').innerHTML='';
+  if(!exName||!tR.length)return;
+  const pts=srt(tR.filter(r=>r.exercise===exName));
+  if(!pts.length)return;
+  const weights=pts.map(r=>r.weight);
+  const pColors=weights.map((w,i)=>i===0?'#6366f1':w>weights[i-1]?'#22c55e':w<weights[i-1]?'#ef4444':'#9ca3af');
+  tC=new Chart(ctx,{type:'line',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:weights,borderColor:'#6366f1',borderWidth:2,pointBackgroundColor:pColors,pointBorderColor:pColors,pointBorderWidth:2,pointRadius:6,pointHoverRadius:8,tension:0.3,fill:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const r=pts[c.dataIndex];return`${r.weight}kg × ${r.sets}組${r.reps}次`;},title:c=>`${pts[c[0].dataIndex].exercise} — ${fd(pts[c[0].dataIndex].date)}`}}},
+    scales:{y:{ticks:{callback:v=>`${v}kg`},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+  rTInsights(exName,pts);
+}
+function rTInsights(exName,pts){
+  const el=document.getElementById('tInsight');
+  if(pts.length<2)return;
+  const insights=[];
+  for(let i=1;i<pts.length;i++){
+    const curr=pts[i],prev=pts[i-1];
+    const diff=+(curr.weight-prev.weight).toFixed(1);
+    if(Math.abs(diff)<0.01)continue;
+    const sl=sR.find(r=>r.date===curr.date),di=dR.find(r=>r.date===curr.date);
+    const days=daysBetween(prev.date,curr.date);
+    const reasons=[];
+    if(diff>0){
+      if(sl&&sl.h>=7)reasons.push(`睡眠充足 ${fh(sl.h)}`);
+      if(di?.prot&&di.prot>=80)reasons.push(`蛋白質達標 ${di.prot}g`);
+      if(days>=3&&days<=7)reasons.push(`適當休息 ${days}天`);
+      insights.push({icon:'🎉',good:true,msg:`<b>${exName}</b> <span style="color:#15803d">+${diff}kg</span>（${prev.weight}→${curr.weight}kg）`,date:fd(curr.date),tip:reasons.length?`可能原因：${reasons.join('、')}`:'繼續保持！'});
+    }else{
+      if(sl&&sl.h!=null&&sl.h<6)reasons.push(`睡眠不足 ${fh(sl.h)}`);
+      if(di?.prot&&di.prot<60)reasons.push(`蛋白質偏低 ${di.prot}g`);
+      if(di?.cMin&&mid(di)<1300)reasons.push(`熱量偏低 ${Math.round(mid(di))}kcal`);
+      if(days>10)reasons.push(`距上次間隔 ${days}天`);
+      insights.push({icon:'⚠️',good:false,msg:`<b>${exName}</b> <span style="color:#b91c1c">${diff}kg</span>（${prev.weight}→${curr.weight}kg）`,date:fd(curr.date),tip:reasons.length?`可能原因：${reasons.join('、')}`:'當天無睡眠/飲食資料'});
+    }
+  }
+  if(!insights.length)return;
+  el.innerHTML=`<div class="insight">
+    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">💡 智能分析</div>
+    ${insights.slice(-3).reverse().map(ins=>`<div class="insight-item">
+      <div class="insight-icon">${ins.icon}</div>
+      <div class="insight-txt"><div style="font-size:11px;color:var(--t2)">${ins.date}</div>
+        <div>${ins.msg}</div>
+        ${ins.tip?`<div style="font-size:12px;color:var(--t2);margin-top:1px">${ins.tip}</div>`:''}
+      </div></div>`).join('')}
+  </div>`;
+}
+const HOME_EX={
+  核心:[
+    {name:'棒式',sets:3,info:'30秒',weight:'',note:''},
+    {name:'屈膝捲腹',sets:3,info:'30秒',weight:'',note:''},
+    {name:'空中自行車',sets:3,info:'30秒',weight:'',note:''},
+    {name:'臀橋',sets:3,info:'30秒',weight:'',note:''},
+    {name:'死蟲式',sets:3,info:'10次/側',weight:'',note:'核心穩定'},
+    {name:'側棒式',sets:2,info:'20秒/側',weight:'',note:''},
+    {name:'摸膝捲腹',sets:3,info:'30秒',weight:'',note:''},
+  ],
+  臀腿:[
+    {name:'壺鈴硬舉',sets:3,info:'12次',weight:'8kg壺鈴',note:''},
+    {name:'高腳杯深蹲',sets:3,info:'15次',weight:'8kg壺鈴',note:''},
+    {name:'壺鈴擺盪',sets:3,info:'15次',weight:'8kg壺鈴',note:'臀部推髖，非手臂'},
+    {name:'臀橋（單腳）',sets:3,info:'12次/側',weight:'',note:''},
+    {name:'保加利亞分腿蹲',sets:3,info:'10次/側',weight:'可手持4kg壺鈴',note:'後腳踩椅子'},
+    {name:'側蹲',sets:3,info:'12次/側',weight:'可手持壺鈴',note:''},
+    {name:'壺鈴深蹲',sets:3,info:'12次',weight:'4kg壺鈴',note:'輕量打基礎'},
+  ],
+  上肢:[
+    {name:'啞鈴肩推',sets:3,info:'12次',weight:'3kg啞鈴',note:''},
+    {name:'啞鈴側平舉',sets:3,info:'15次',weight:'3kg啞鈴',note:''},
+    {name:'啞鈴前平舉',sets:3,info:'12次',weight:'3kg啞鈴',note:''},
+    {name:'俯身啞鈴划船',sets:3,info:'12次/側',weight:'3kg啞鈴',note:''},
+    {name:'壺鈴單臂划船',sets:3,info:'12次/側',weight:'4kg壺鈴',note:''},
+    {name:'向後掰掰手',sets:3,info:'30秒',weight:'1.5kg啞鈴',note:'三頭肌'},
+    {name:'W字肩胛收縮',sets:3,info:'15次',weight:'',note:'啟動背肌'},
+    {name:'招財貓手',sets:3,info:'30秒',weight:'1.5kg啞鈴',note:''},
+  ],
+  放鬆:[
+    {name:'超慢跑',sets:1,info:'10分鐘',weight:'',note:'原地或小空間'},
+    {name:'滾筒大腿放鬆',sets:1,info:'各1分鐘',weight:'滾筒',note:''},
+    {name:'滾筒背部放鬆',sets:1,info:'1分鐘',weight:'滾筒',note:''},
+    {name:'貓牛伸展',sets:1,info:'10次',weight:'',note:'脊椎活動'},
+  ]
+};
+function rndPick(arr,n){return[...arr].sort(()=>Math.random()-.5).slice(0,n);}
+function planReadinessInfo(){
+  const sl=sR.find(r=>r.date===today())||sR.find(r=>r.date===dAgo(1));
+  const di=dR.find(r=>r.date===today())||dR.find(r=>r.date===dAgo(1));
+  let readiness='normal',color='#6b7280',text='狀態未知（今日睡眠未記錄）';
+  if(sl?.h!=null){
+    if(sl.h>=7){readiness='good';color='#15803d';text=`睡眠充足 ${fh(sl.h)}，可挑戰強度`;}
+    else if(sl.h>=5.5){readiness='ok';color='#b45309';text=`睡眠略少 ${fh(sl.h)}，維持重量完成組數`;}
+    else{readiness='poor';color='#b91c1c';text=`睡眠不足 ${fh(sl.h)}，建議輕量或以恢復為主`;}
+  }
+  let dietNote='';
+  if(di?.prot!=null&&di.prot<60)dietNote+=`・蛋白質偏低（${di.prot}g），訓練後記得補充`;
+  if(di?.cMin!=null&&mid(di)<1300)dietNote+=`・熱量偏低（${Math.round(mid(di))}kcal），注意體力`;
+  return{readiness,color,text,dietNote};
+}
+function genTrainPlan(mode){
+  const{readiness,color,text,dietNote}=planReadinessInfo();
+  document.getElementById('planReadiness').innerHTML=
+    `<span style="color:${color};font-weight:600">${text}</span>`+
+    (dietNote?`<div style="color:#b45309;font-size:12px;margin-top:3px">${dietNote}</div>`:'');
+  const titleEl=document.querySelector('#planOverlay .modal .mhd h2');
+  if(mode==='gym'){
+    titleEl.textContent='🏋 重訓菜單建議';
+    const exs=[...new Set(tR.map(r=>r.exercise))];
+    if(!exs.length){alert('尚無重訓紀錄，先新增幾筆再來規劃！');return;}
+    const data=exs.map(ex=>{
+      const recs=srt(tR.filter(r=>r.exercise===ex));
+      const last=recs[recs.length-1],prev=recs.length>=2?recs[recs.length-2]:null;
+      return{ex,last,prev,daysSince:daysBetween(last.date,today())};
+    }).sort((a,b)=>b.daysSince-a.daysSince);
+    const sugs=data.slice(0,5).map(d=>{
+      let wt=d.last.weight,advice='';
+      if(readiness==='good'&&d.daysSince>=3&&(!d.prev||d.last.weight>=d.prev.weight)){
+        const inc=wt>=20?2.5:wt>=10?1.25:0.5;
+        wt=+(d.last.weight+inc).toFixed(2);
+        advice=`嘗試 +${inc}kg`;
+      }else if(readiness==='poor'){
+        wt=+(d.last.weight*.9).toFixed(1);
+        advice=`建議降至 ${wt}kg`;
+      }else advice=`維持上次 ${d.last.weight}kg`;
+      const dayStr=d.daysSince===0?'今天':d.daysSince===1?'昨天':`${d.daysSince}天前`;
+      return{ex:d.ex,wt,sets:d.last.sets,reps:d.last.reps,dayStr,advice};
+    });
+    document.getElementById('planList').innerHTML=sugs.map(s=>`
+      <div style="border:1px solid var(--bd);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">${s.ex}</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:3px">上次 ${s.dayStr}・${s.advice}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:20px;font-weight:700;color:var(--p)">${s.wt}<span style="font-size:13px;font-weight:400;color:var(--t2)">kg</span></div>
+          <div style="font-size:12px;color:var(--t2)">${s.sets}組×${s.reps}次</div>
+        </div>
+      </div>`).join('');
+  }else{
+    titleEl.textContent='🏠 居家菜單建議';
+    const isPoor=readiness==='poor';
+    const lightLegs=HOME_EX.臀腿.filter(e=>!e.weight||!e.weight.includes('8kg'));
+    const sections=[
+      {title:'🧘 核心',exs:rndPick(HOME_EX.核心,2)},
+      {title:'🦵 臀腿',exs:rndPick(isPoor?lightLegs:HOME_EX.臀腿,isPoor?2:3)},
+      {title:'💪 上肢',exs:rndPick(HOME_EX.上肢,2)},
+      {title:'🌊 放鬆',exs:rndPick(HOME_EX.放鬆,isPoor?2:1)},
+    ];
+    document.getElementById('planList').innerHTML=sections.map(sec=>`
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin:8px 0 5px">${sec.title}</div>
+        ${sec.exs.map(e=>`
+        <div style="border:1px solid var(--bd);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">${e.name}${e.note?`<span style="font-weight:400;color:var(--t2);font-size:11px;margin-left:6px">${e.note}</span>`:''}</div>
+            ${e.weight?`<div style="font-size:12px;color:#0284c7;margin-top:2px">${e.weight}</div>`:''}
+          </div>
+          <div style="text-align:right;flex-shrink:0;color:var(--p);font-weight:600;font-size:13px">${e.sets}組<br><span style="font-size:12px;color:var(--t2);font-weight:400">${e.info}</span></div>
+        </div>`).join('')}
+      </div>`).join('');
+  }
+  document.getElementById('planOverlay').style.display='flex';
+}
+function closePlan(){document.getElementById('planOverlay').style.display='none';}
+function rTTable(){
+  document.getElementById('tTbody').innerHTML=srt(tR).reverse().map(r=>{
+    const exRecs=srt(tR.filter(x=>x.exercise===r.exercise));
+    const idx=exRecs.findIndex(x=>x.id===r.id);
+    const isUp=idx>0&&r.weight>exRecs[idx-1].weight,isDn=idx>0&&r.weight<exRecs[idx-1].weight;
+    return`<tr>
+    <td style="font-weight:500;white-space:nowrap">${fd(r.date)}</td>
+    <td style="font-weight:600">${r.exercise}</td>
+    <td style="font-weight:700;color:${isUp?'#15803d':isDn?'#b91c1c':'#6366f1'}">${r.weight}kg${isUp?' ↑':isDn?' ↓':''}</td>
+    <td style="color:var(--t2)">${r.sets}×${r.reps}</td>
+    <td style="color:var(--t2);font-size:13px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.note||'').replace(/"/g,'&quot;')}">${r.note||'—'}</td>
+    <td><button class="act" onclick="tEdit(${r.id})">✏️</button><button class="act" onclick="tDel(${r.id})">🗑</button></td>
+  </tr>`;}).join('');
+}
+
 // ── WEEKLY TIPS ────────────────────────────────────────────────────────────
 function renderTips(){
   const tips=[];
@@ -1256,9 +1640,9 @@ document.getElementById('expBtn').addEventListener('click',()=>{
 });
 
 // ── INIT ───────────────────────────────────────────────────────────────────
-['sDate','dDate','eDate','hDate'].forEach(id=>document.getElementById(id).value=today());
+['sDate','dDate','eDate','hDate','tDate'].forEach(id=>document.getElementById(id).value=today());
 loadLocal();
-renderCal();renderS();renderD();renderE();renderH();renderTips();
+renderCal();renderS();renderD();renderE();renderH();renderT();renderTips();
 updateAuthUI();
 initAuth();
 </script>
