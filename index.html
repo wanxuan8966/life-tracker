@@ -726,7 +726,12 @@ function initAuth(){
       setSyncStatus('⏳ 載入中…','syncing');
       const hasCloud=await loadCloud();
       if(!hasCloud){
-        // first login → push local seed data to cloud
+        await saveCloud();
+      } else if(tR.length===0){
+        // 新功能：訓練紀錄還沒上傳過，把本機資料同步上去
+        tR.push(...TSEED.map(r=>({...r})));
+        tN=200+TSEED.length;
+        saveLocal();
         await saveCloud();
       }
       renderCal();renderS();renderD();renderE();renderH();renderT();renderTips();
