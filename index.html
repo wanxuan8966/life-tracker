@@ -431,6 +431,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="sc"><div class="sl">最新肌肉量</div><div class="sv" id="ws3">—</div><div class="ss" id="ws3d"></div></div>
     <div class="sc"><div class="sl">近期趨勢</div><div class="sv" id="ws4" style="font-size:16px">—</div><div class="ss">近幾筆</div></div>
   </div>
+  <div id="wInsight"></div>
   <div class="g2">
     <div class="card">
       <h2 id="wft">＋ 新增體重紀錄</h2>
@@ -1671,7 +1672,59 @@ function wReset(){
   document.getElementById('wId').value='';document.getElementById('wForm').reset();document.getElementById('wDate').value=today();
   document.getElementById('wft').textContent='＋ 新增體重紀錄';document.getElementById('wBtn').textContent='新增';document.getElementById('wCan').style.display='none';
 }
-function renderW(){rWStats();rWChart();rWTable();}
+function renderW(){rWStats();rWInsight();rWChart();rWTable();}
+function rWInsight(){
+  const el=document.getElementById('wInsight');if(!el)return;
+  const s=srt(wR);if(s.length<2){el.innerHTML='';return;}
+  // Weight trend (last 2 records)
+  const wLast=s[s.length-1],wPrev=s[s.length-2];
+  const wtDiff=+(wLast.weight-wPrev.weight).toFixed(1);
+  // Fat trend (last 2 records with fat, prefer Mi-scale records)
+  const withFat=s.filter(r=>r.fat!=null);
+  const fatDiff=withFat.length>=2?+(withFat[withFat.length-1].fat-withFat[withFat.length-2].fat).toFixed(1):null;
+  // Muscle trend (last 2 with muscle)
+  const withMuscle=s.filter(r=>r.muscle!=null);
+  const muscleDiff=withMuscle.length>=2?+(withMuscle[withMuscle.length-1].muscle-withMuscle[withMuscle.length-2].muscle).toFixed(1):null;
+  // Rows
+  const row=(label,val,color,explain)=>`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #e0e7ff">
+    <div style="font-size:12px;color:var(--t2);min-width:52px">${label}</div>
+    <div style="font-weight:700;color:${color};font-size:14px;min-width:58px">${val}</div>
+    <div style="font-size:12px;color:var(--t);flex:1">${explain}</div>
+  </div>`;
+  let rows='';
+  // Weight
+  const wi=wtDiff<-0.1?'↓':wtDiff>0.1?'↑':'→';
+  const wc=wtDiff<-0.1?'#15803d':wtDiff>0.5?'#b91c1c':'#6b7280';
+  const we=wtDiff<-0.3?'體重下降，好的方向':wtDiff>0.5?'體重明顯上升，先確認是否高鈉水腫或生理期':wtDiff>0.1?'體重略升，留意近日飲食':'持平，正常波動';
+  rows+=row('體重',`${wi} ${Math.abs(wtDiff)}kg`,wc,we);
+  // Fat
+  if(fatDiff!==null){
+    const fi=fatDiff<-0.1?'↓':fatDiff>0.1?'↑':'→';
+    const fc=fatDiff<-0.1?'#15803d':fatDiff>0.3?'#b91c1c':'#6b7280';
+    const fe=fatDiff<-0.2?'體脂在下降，減脂有效果！':fatDiff>0.3?'體脂升，注意甜飲與精緻澱粉':'體脂持平，日常波動屬正常（注意小米誤差）';
+    rows+=row('體脂率',`${fi} ${Math.abs(fatDiff)}%`,fc,fe);
+  }
+  // Muscle
+  if(muscleDiff!==null){
+    const mi2=muscleDiff>0.1?'↑':muscleDiff<-0.1?'↓':'→';
+    const mc=muscleDiff>0.1?'#15803d':muscleDiff<-0.2?'#b91c1c':'#6b7280';
+    const me=muscleDiff>0.1?'肌肉量增加，訓練有效果！':muscleDiff<-0.2?'肌肉略降，確認蛋白質是否達 80g':'肌肉持平，正常波動，繼續訓練';
+    rows+=row('肌肉量',`${mi2} ${Math.abs(muscleDiff)}kg`,mc,me);
+  }
+  // Overall
+  const fatGood=fatDiff!==null&&fatDiff<0,muscleOK=muscleDiff===null||muscleDiff>=-0.1,wtOK=wtDiff<=0.1;
+  let overall='';
+  if(fatGood&&muscleOK)overall='🎉 體脂↓ 肌肉持平或上升——這是理想的身體重組方向，完全正確！';
+  else if(fatGood&&!muscleOK)overall='⚠️ 體脂在降但肌肉也在減，加強蛋白質（目標 80–100g/天）並確保訓練量。';
+  else if(!fatGood&&muscleDiff!==null&&muscleDiff>0.1)overall='💪 肌肉在增加，體脂略升是增肌期正常現象。控制甜飲、繼續訓練。';
+  else if(wtDiff>0.5)overall='💧 體重突然上升多為水腫，確認是否高鈉飲食或生理期，多喝水 2–3 天後會回落。';
+  else overall='📊 持續記錄中，資料累積後趨勢分析會更準確。';
+  el.innerHTML=`<div style="background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 16px;margin-bottom:2px">
+    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📊 體組成現況解讀</div>
+    ${rows}
+    <div style="font-size:12px;color:var(--t);margin-top:10px;line-height:1.6;padding-top:8px;border-top:1px solid #e0e7ff">${overall}</div>
+  </div>`;
+}
 function rWStats(){
   const s=srt(wR),last=s[s.length-1];
   const al=document.getElementById('weightAlert');
