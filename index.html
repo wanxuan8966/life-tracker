@@ -667,8 +667,8 @@ const DSEED=[
    details:"早餐: Q Burger中杯奶茶半糖+鮪魚玉米可朗芙 525kcal 蛋白質15-25g\n午餐: 7-11蛋白餐盒約半份（蛋、豆腐、部分烤雞） 325kcal 蛋白質20-35g\n晚餐: KFC紙包雞+雞汁飯+KFC奶茶 775kcal 蛋白質25-40g",note:"水喝得很好2800ml，晚餐鈉偏高，隔天水腫機率高"},
   {id:13,date:"2026-05-27",cMin:775,cMax:1025,prot:null,water:null,
    details:"中午: 健檢提供餐（炒蛋、無糖茶、半份三明治） 250-450kcal\n晚上: 潤餅1份 450-500kcal\n晚上: 7-11黑胡椒雞柳條半份 75kcal 蛋白質12.7g",note:"健檢日，晚餐補完"},
-  {id:14,date:"2026-05-28",cMin:2170,cMax:2170,prot:89,water:1000,
-   details:"早餐: 茶葉蛋+統一陽光低糖高纖豆漿 250kcal 蛋白質20g\n午餐: 藏壽司（炙烤奶油醬油鮭魚2貫+炙烤蒜香醃漬生鮭魚1貫+生鮭魚脂2貫+炸蝦天婦羅海苔包1貫+薯條1碗+抹茶牛奶霜淇淋+泰山冰鎮芭樂綠茶300ml） 1100kcal 蛋白質25g\n下午點心: 翠菓子天天Bites綜合堅果25g 122kcal 蛋白質5g\n晚餐: 鹽水雞整份（去皮雞腿肉+節瓜+雞卵） 300kcal 蛋白質30g\n晚餐: 7-11凱薩雞肉沙拉（醬少許） 150kcal 蛋白質8.9g\n晚餐飲料: 茶湯會鐵觀音觀音拿鐵微糖微冰 250kcal",note:"蛋白質達標89g，水1000ml偏少，鈉含量高"},
+  {id:14,date:"2026-05-28",cMin:2170,cMax:2170,prot:89,water:1700,
+   details:"早餐: 茶葉蛋+統一陽光低糖高纖豆漿 250kcal 蛋白質20g\n午餐: 藏壽司（炙烤奶油醬油鮭魚2貫+炙烤蒜香醃漬生鮭魚1貫+生鮭魚脂2貫+炸蝦天婦羅海苔包1貫+薯條1碗+抹茶牛奶霜淇淋+泰山冰鎮芭樂綠茶300ml） 1100kcal 蛋白質25g\n下午點心: 翠菓子天天Bites綜合堅果25g 122kcal 蛋白質5g\n晚餐: 鹽水雞整份（去皮雞腿肉+節瓜+雞卵） 300kcal 蛋白質30g\n晚餐: 7-11凱薩雞肉沙拉（醬少許） 150kcal 蛋白質8.9g\n晚餐飲料: 茶湯會鐵觀音觀音拿鐵微糖微冰 250kcal",note:"蛋白質達標89g，水1700ml"},
 ];
 const ESEED=[
   {id:1,date:"2026-05-15",type:"重訓",int:"中",
@@ -715,6 +715,26 @@ const TSEED=[
   {id:18,date:"2026-05-24",exercise:"滑輪下拉",weight:19,sets:3,reps:15,note:"最後一組差點撐完"},
 ];
 // 一次性資料修正
+function migrateDRecords(){
+  let changed=false;
+  // 清除 5/28 重複紀錄，保留正確那筆
+  const d528=dR.filter(r=>r.date==="2026-05-28");
+  if(d528.length>1){
+    // 刪掉不完整的（蛋白質<50或熱量<500），保留最完整的
+    const best=d528.reduce((a,b)=>((a.prot||0)+(a.cMin||0))>((b.prot||0)+(b.cMin||0))?a:b);
+    dR=dR.filter(r=>r.date!=="2026-05-28");
+    dR.push(best);
+    changed=true;
+  }
+  // 修正 5/28 的正確值
+  const r528=dR.find(r=>r.date==="2026-05-28");
+  if(r528&&(r528.water!==1700||r528.prot!==89||r528.cMin!==2170)){
+    r528.cMin=2170;r528.cMax=2170;r528.prot=89;r528.water=1700;
+    r528.note="蛋白質達標89g，水1700ml";
+    changed=true;
+  }
+  return changed;
+}
 function migrateERecords(){
   let changed=false;
   const r=eR.find(r=>r.date==="2026-05-28"&&r.type==="有氧"&&r.note==="頂著睡眠不足撐完整場，大量出汗");
@@ -846,6 +866,7 @@ function initAuth(){
         if(missingW.length){missingW.forEach(r=>wR.push({...r,id:wN++}));needSync=true;}
         // 修正舊的動作名稱與資料
         if(normalizeTExercises())needSync=true;
+        if(migrateDRecords())needSync=true;
         if(migrateERecords())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
@@ -1345,13 +1366,36 @@ function showAIResults(p){
 function confirmAI(){
   if(!aiParsed)return;
   const p=aiParsed;let added=0;
-  if(p.sleep?.found){sR.push({id:sN++,date:p.date,s:p.sleep.sleepTime||'',w:p.sleep.wakeTime||'',h:p.sleep.hours,note:p.sleep.note||''});added++;}
-  if(p.diet?.found){dR.push({id:dN++,date:p.date,cMin:p.diet.calMin,cMax:p.diet.calMax,prot:p.diet.prot,water:p.diet.water,details:p.diet.details||'',note:p.diet.note||''});added++;}
-  if(p.exercise?.found){eR.push({id:eN++,date:p.date,type:p.exercise.type,int:p.exercise.intensity,details:p.exercise.details||'',note:p.exercise.note||''});added++;}
+  // Sleep
+  if(p.sleep?.found){
+    const ex=sR.find(r=>r.date===p.date);
+    if(ex){if(confirm(`${fd(p.date)} 已有睡眠紀錄，要覆蓋更新嗎？`)){const i=sR.indexOf(ex);sR[i]={...ex,s:p.sleep.sleepTime||ex.s,w:p.sleep.wakeTime||ex.w,h:p.sleep.hours??ex.h,note:p.sleep.note||ex.note};added++;}}
+    else{sR.push({id:sN++,date:p.date,s:p.sleep.sleepTime||'',w:p.sleep.wakeTime||'',h:p.sleep.hours,note:p.sleep.note||''});added++;}
+  }
+  // Diet — merge if same day exists
+  if(p.diet?.found){
+    const ex=dR.find(r=>r.date===p.date);
+    if(ex){
+      const choice=confirm(`${fd(p.date)} 已有飲食紀錄，點「確定」更新既有紀錄，點「取消」新增第二筆`);
+      if(choice){
+        const i=dR.indexOf(ex);
+        const newCal=p.diet.calMin??ex.cMin;
+        const newDetails=[ex.details,p.diet.details].filter(Boolean).join('\n');
+        dR[i]={...ex,cMin:newCal,cMax:p.diet.calMax??newCal,prot:p.diet.prot??ex.prot,water:p.diet.water??ex.water,details:newDetails,note:p.diet.note||ex.note};
+      }else{dR.push({id:dN++,date:p.date,cMin:p.diet.calMin,cMax:p.diet.calMax,prot:p.diet.prot,water:p.diet.water,details:p.diet.details||'',note:p.diet.note||''});}
+      added++;
+    }else{dR.push({id:dN++,date:p.date,cMin:p.diet.calMin,cMax:p.diet.calMax,prot:p.diet.prot,water:p.diet.water,details:p.diet.details||'',note:p.diet.note||''});added++;}
+  }
+  // Exercise
+  if(p.exercise?.found){
+    const ex=eR.find(r=>r.date===p.date);
+    if(ex){if(confirm(`${fd(p.date)} 已有運動紀錄，要覆蓋更新嗎？`)){const i=eR.indexOf(ex);eR[i]={...ex,type:p.exercise.type,int:p.exercise.intensity,details:p.exercise.details||ex.details,note:p.exercise.note||ex.note};added++;}}
+    else{eR.push({id:eN++,date:p.date,type:p.exercise.type,int:p.exercise.intensity,details:p.exercise.details||'',note:p.exercise.note||''});added++;}
+  }
   save();renderS();renderD();renderE();renderTips();
   document.getElementById('aiResults').style.display='none';
   document.getElementById('aiOk').style.display='block';
-  document.getElementById('aiOk').innerHTML=`<div class="ok">✓ 已新增 ${added} 筆紀錄！</div>`;
+  document.getElementById('aiOk').innerHTML=`<div class="ok">✓ 已處理 ${added} 筆紀錄！</div>`;
   document.getElementById('aiInput').value='';
   setTimeout(()=>closeAI(),1800);
 }
