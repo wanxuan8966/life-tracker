@@ -287,6 +287,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="sc"><div class="sl">達標天數 ≥7h</div><div class="sv" id="ss3">—</div><div class="ss">近14天</div></div>
     <div class="sc"><div class="sl">近14天平均</div><div class="sv" id="ss4">—</div><div class="ss" id="ss4s"></div></div>
   </div>
+  <div id="sInsight"></div>
   <div class="g2">
     <div class="card">
       <h2 id="sft">＋ 新增睡眠紀錄</h2>
@@ -361,6 +362,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="sc"><div class="sl">最新蛋白質</div><div class="sv" id="ds3">—</div><div class="ss" id="ds3d"></div></div>
     <div class="sc"><div class="sl">最新飲水量</div><div class="sv" id="ds4">—</div><div class="ss" id="ds4d"></div></div>
   </div>
+  <div id="dInsight"></div>
   <div class="g2">
     <div class="card">
       <h2 id="dft">＋ 新增飲食紀錄</h2>
@@ -409,6 +411,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="sc"><div class="sl">最新一筆</div><div class="sv" id="es3">—</div><div class="ss" id="es3d"></div></div>
     <div class="sc"><div class="sl">連續訓練天數</div><div class="sv" id="es4">—</div><div class="ss">目前連續</div></div>
   </div>
+  <div id="eInsight"></div>
   <div class="g2">
     <div class="card">
       <h2 id="eft">＋ 新增運動紀錄</h2>
@@ -956,6 +959,105 @@ function fbTag(fb){
 }
 function fcal(r){if(!r.cMin)return'—';return r.cMax&&r.cMax!==r.cMin?`${r.cMin}–${r.cMax}`:`${r.cMin}`}
 
+// ── INSIGHT HELPERS ───────────────────────────────────────────────────────────
+const FOOD_FLAGS={
+  甜飲:['奶茶','拿鐵','手搖','珍珠','可樂','雪碧','甜飲','鮮奶茶','CoCo','迷客夏','得正','茶湯會','鶴茶樓','OMURO','義美經典','西西里'],
+  炸物:['薯條','炸雞','炸蝦','天婦羅','炸物','可朗芙','鍋貼','炸'],
+  甜食:['冰淇淋','霜淇淋','蛋糕','甜點','布丁','泡芙','肉桂捲','甜麵包'],
+  高鈉:['KFC','麥當勞','泡麵','加工','培根','醬料'],
+};
+function renderInsightBox(el,tips,title){
+  if(!el||!tips.length){if(el)el.innerHTML='';return;}
+  const cc2={good:'#15803d',warn:'#b45309',bad:'#b91c1c',neutral:'#6b7280'};
+  const bg2={good:'#f0fdf4',warn:'#fef9c3',bad:'#fef2f2',neutral:'#f3f4f6'};
+  el.innerHTML=`<div style="background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 16px;margin-bottom:2px">
+    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">💡 ${title}</div>
+    ${tips.map(t=>`<div style="padding:4px 0;border-bottom:1px solid #e0e7ff"><span style="display:inline-block;font-size:12px;padding:3px 10px;border-radius:8px;background:${bg2[t.cls]};color:${cc2[t.cls]};line-height:1.6">${t.msg}</span></div>`).join('')}
+  </div>`;
+}
+function rSInsight(){
+  const el=document.getElementById('sInsight');
+  const s=srt(sR),last=s[s.length-1];
+  if(!last){if(el)el.innerHTML='';return;}
+  const tips=[];
+  if(last.h!=null){
+    if(last.h<5)tips.push({cls:'bad',msg:`睡眠嚴重不足（${fh(last.h)}），今日建議輕度活動為主，優先補眠`});
+    else if(last.h<6.5)tips.push({cls:'warn',msg:`睡眠略少（${fh(last.h)}），訓練建議中低強度，注意頭暈`});
+    else if(last.h<=9)tips.push({cls:'good',msg:`睡眠充足（${fh(last.h)}），恢復狀態良好`});
+    else tips.push({cls:'warn',msg:`睡眠偏多（${fh(last.h)}），可能是補眠或睡太久感覺反而更累`});
+  }
+  if(last.s){
+    const bh=parseInt(last.s);
+    if(bh>=2&&bh<=5)tips.push({cls:'warn',msg:`${last.s} 才入睡，作息偏晚。試著每週提早15分鐘入睡，慢慢調整生理時鐘`});
+    else if(bh>=23||bh<=1)tips.push({cls:'good',msg:`入睡時間 ${last.s}，作息在合理範圍`});
+  }
+  if(last.energy!=null&&last.h!=null){
+    if(last.energy<=2&&last.h<6)tips.push({cls:'bad',msg:`精神 ${last.energy} 分，與睡眠不足（${fh(last.h)}）直接相關，優先改善睡眠時間`});
+    else if(last.energy>=4&&last.h>=7)tips.push({cls:'good',msg:`睡眠充足且精神良好（${last.energy}分），這樣的狀態最理想`});
+    else if(last.energy>=4&&last.h<6)tips.push({cls:'warn',msg:`睡少但精神好（${last.energy}分），可能是腎上腺素，下午注意能量低谷`});
+  }
+  if(last.headache)tips.push({cls:'warn',msg:'有頭暈/頭痛，先補水，若反覆發生可能與睡眠不足或高鈉飲食有關'});
+  if(last.lowPt&&last.lowPt!=='無')tips.push({cls:'neutral',msg:`能量低谷在「${last.lowPt}」，安排重要事情時盡量避開這段時間`});
+  renderInsightBox(el,tips,'最新睡眠分析');
+}
+function rDInsight(){
+  const el=document.getElementById('dInsight');
+  const s=srt(dR),last=s[s.length-1];
+  if(!last){if(el)el.innerHTML='';return;}
+  const tips=[];
+  const cal=mid(last);
+  if(cal){
+    const fb=dietFeedback(cal);
+    if(fb.cls==='good')tips.push({cls:'good',msg:`熱量達標（${Math.round(cal)} kcal），很好`});
+    else if(fb.cls==='bad'&&cal<CAL_LOW)tips.push({cls:'bad',msg:`熱量太低（${Math.round(cal)} kcal），可能影響肌肉合成與訓練恢復`});
+    else if(fb.cls==='bad'&&cal>CAL_HIGH)tips.push({cls:'bad',msg:`熱量超標（${Math.round(cal)} kcal），明天均衡回來即可`});
+    else if(cal<CAL_MIN)tips.push({cls:'warn',msg:`熱量略低（${Math.round(cal)} kcal），注意蛋白質是否足夠`});
+    else tips.push({cls:'warn',msg:`熱量略高（${Math.round(cal)} kcal），留意甜飲的隱藏熱量`});
+  }
+  if(last.prot!=null){
+    if(last.prot>=80)tips.push({cls:'good',msg:`蛋白質達標（${last.prot}g），肌肉合成支持良好`});
+    else{const gap=80-last.prot;tips.push({cls:'warn',msg:`蛋白質 ${last.prot}g，距目標差 ${gap}g。可補：豆漿+茶葉蛋≈20g，雞胸100g≈30g`});}
+  }
+  if(last.water!=null){
+    if(last.water>=WATER_TARGET)tips.push({cls:'good',msg:`水分達標（${last.water}ml）`});
+    else tips.push({cls:'warn',msg:`水分不足（${last.water}ml），還差 ${WATER_TARGET-last.water}ml，多喝水也幫助代謝`});
+  }
+  if(last.details){
+    const flagged={};
+    for(const[type,words]of Object.entries(FOOD_FLAGS)){
+      const hits=words.filter(w=>last.details.includes(w));
+      if(hits.length)flagged[type]=hits.slice(0,2);
+    }
+    if(Object.keys(flagged).length){
+      const msg=Object.entries(flagged).map(([t,items])=>`${t}（${items.join('、')}）`).join('・');
+      tips.push({cls:'warn',msg:`今日留意：${msg}，這類食物鈉糖較高`});
+    }
+  }
+  renderInsightBox(el,tips,'最新飲食分析');
+}
+function rEInsight(){
+  const el=document.getElementById('eInsight');
+  const s=srt(eR),last=s[s.length-1];
+  if(!last){if(el)el.innerHTML='';return;}
+  const tips=[];
+  const actTypes=['重訓','有氧','教練課','居家','混合'];
+  const isAct=actTypes.includes(last.type);
+  if(isAct){
+    if(last.int==='高'||last.int==='中')tips.push({cls:'good',msg:`訓練後30-60分鐘補充蛋白質效果最好（目標20-30g），可以喝豆漿+茶葉蛋`});
+    const sl=sR.find(r=>r.date===last.date);
+    if(sl&&sl.h!=null&&sl.h<6)tips.push({cls:'warn',msg:`訓練當天睡眠不足（${fh(sl.h)}），注意頭暈，別硬撐大重量`});
+    const act7=srt(eR).slice(-7).filter(r=>actTypes.includes(r.type));
+    if(act7.length>=5)tips.push({cls:'warn',msg:`近7天訓練${act7.length}天，注意過度訓練，確保有休息日讓肌肉修復`});
+    if(last.type==='重訓')tips.push({cls:'neutral',msg:'重訓刺激肌肉生長，關鍵是睡眠+蛋白質，這兩個夠才有效果'});
+    else if(last.type==='教練課')tips.push({cls:'neutral',msg:'教練課主要在技術校正，打好動作基礎比重量更重要'});
+    else if(last.type==='有氧')tips.push({cls:'good',msg:'有氧幫助脂肪代謝，搭配重訓效果更好，記得補水'});
+  }else{
+    tips.push({cls:'neutral',msg:`今天是${last.type}，肌肉在休息時才真正生長，休息也是訓練的一部分`});
+    tips.push({cls:'good',msg:'休息日仍要補充足夠蛋白質（目標80g），幫助肌肉修復'});
+  }
+  renderInsightBox(el,tips,'最新訓練分析');
+}
+
 // ── SLEEP ──────────────────────────────────────────────────────────────────
 function sCalc(){
   const s=document.getElementById('sSleep').value,w=document.getElementById('sWake').value;
@@ -983,7 +1085,7 @@ function sReset(){
   document.getElementById('sft').textContent='＋ 新增睡眠紀錄';document.getElementById('sBtn').textContent='新增';document.getElementById('sCan').style.display='none';
   const el=document.getElementById('sCalcD');el.textContent='輸入時間後自動計算';el.style.background='';el.style.color='';
 }
-function renderS(){rSStats();rSChart();rSTable();}
+function renderS(){rSStats();rSInsight();rSChart();rSTable();}
 function rSStats(){
   const s=srt(sR),wh=s.filter(r=>r.h!=null),last=s[s.length-1];
   if(last){const q=sq(last.h);document.getElementById('ss1').innerHTML=last.h!=null?`${fh(last.h)} <span>實睡</span>`:'—';document.getElementById('ss1b').innerHTML=`<span class="badge" style="background:${q.bg}20;color:${q.t}">${q.l}</span>`;document.getElementById('ss1d').textContent=fd(last.date);}
@@ -1048,7 +1150,7 @@ function dReset(){
   document.getElementById('dId').value='';document.getElementById('dForm').reset();document.getElementById('dDate').value=today();
   document.getElementById('dft').textContent='＋ 新增飲食紀錄';document.getElementById('dBtn').textContent='新增';document.getElementById('dCan').style.display='none';
 }
-function renderD(){rDStats();rDChart();rDTable();}
+function renderD(){rDStats();rDInsight();rDChart();rDTable();}
 function rDStats(){
   const s=srt(dR),wh=s.filter(r=>r.cMin!=null),last=s[s.length-1];
   if(last){document.getElementById('ds1').innerHTML=last.cMin!=null?`${fcal(last)} <span>kcal</span>`:'—';document.getElementById('ds1fb').innerHTML=fbTag(dietFeedback(mid(last)));document.getElementById('ds1d').textContent=fd(last.date);}
@@ -1109,7 +1211,7 @@ function eReset(){
   document.getElementById('eId').value='';document.getElementById('eForm').reset();document.getElementById('eDate').value=today();
   document.getElementById('eft').textContent='＋ 新增運動紀錄';document.getElementById('eBtn').textContent='新增';document.getElementById('eCan').style.display='none';
 }
-function renderE(){rEStats();rEChart();rETable();}
+function renderE(){rEStats();rEInsight();rEChart();rETable();}
 function rEStats(){
   const s=srt(eR),act=['重訓','有氧','教練課','居家','混合'],ws=wkStart(),d14=dAgo(13);
   const wk=s.filter(r=>r.date>=ws&&act.includes(r.type));
