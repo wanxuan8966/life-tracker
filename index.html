@@ -96,6 +96,34 @@ tbody td{padding:10px;vertical-align:top}
 .sync-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:12px;background:#f0fdf4;color:#15803d}
 .sync-status.syncing{background:#fef9c3;color:#854d0e}
 .sync-status.err{background:#fef2f2;color:#b91c1c}
+/* ── Calendar ── */
+.cal-wrap{background:var(--card);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-nav h2{font-size:16px;font-weight:700}
+.cal-arr{background:none;border:1px solid var(--bd);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--t2);display:flex;align-items:center;justify-content:center}
+.cal-arr:hover{background:var(--bg)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-head{text-align:center;font-size:11px;font-weight:700;color:var(--t2);padding:4px 0}
+.cal-head:first-child,.cal-head:last-child{color:#ef4444}
+.cal-cell{border-radius:8px;padding:5px 3px;cursor:pointer;min-height:54px;border:1.5px solid transparent;transition:background .12s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.cal-cell:hover{background:var(--bg)}
+.cal-cell.today{border-color:var(--p)}
+.cal-cell.sel{background:var(--pl);border-color:var(--p)}
+.cal-cell.empty{cursor:default;pointer-events:none}
+.cal-num{font-size:12px;font-weight:600;color:var(--t);line-height:1}
+.cal-dots{display:flex;gap:2px;justify-content:center}
+.cal-dot{width:7px;height:7px;border-radius:50%}
+.cal-leg{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.cal-leg-section{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.cal-leg-title{font-size:10px;font-weight:700;color:var(--t2);margin-right:2px}
+.cal-leg-item{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--t2)}
+.cal-detail{background:var(--card);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh)}
+.cal-detail h2{font-size:15px;font-weight:700;margin-bottom:12px}
+.det-sec{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.det-sec:last-child{border-bottom:none}
+.det-icon{font-size:16px;width:24px;flex-shrink:0;margin-top:1px}
+.det-body{flex:1;font-size:13px}
+.det-body b{font-weight:700}
 /* ── Weekly Tips ── */
 .tips-bar{background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .tips-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.8;white-space:nowrap}
@@ -111,9 +139,11 @@ tbody td{padding:10px;vertical-align:top}
 <header>
   <div class="brand">📔 生活紀錄</div>
   <nav>
-    <button class="tb on" data-tab="sleep">😴 睡眠</button>
+    <button class="tb on" data-tab="cal">📅 總覽</button>
+    <button class="tb" data-tab="sleep">😴 睡眠</button>
     <button class="tb" data-tab="diet">🍽 飲食</button>
     <button class="tb" data-tab="ex">💪 運動</button>
+    <button class="tb" data-tab="health">💊 健康</button>
   </nav>
   <div class="hdr-r">
     <div id="authUI"></div>
@@ -183,8 +213,59 @@ tbody td{padding:10px;vertical-align:top}
 </div>
 </div>
 
+<!-- ══ CALENDAR ══ -->
+<div id="tab-cal" class="tab on">
+<div class="page">
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="cal-arr" onclick="calPrev()">‹</button>
+      <h2 id="calTitle"></h2>
+      <button class="cal-arr" onclick="calNext()">›</button>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-head">一</div><div class="cal-head">二</div><div class="cal-head">三</div>
+      <div class="cal-head">四</div><div class="cal-head">五</div>
+      <div class="cal-head" style="color:#6366f1">六</div><div class="cal-head">日</div>
+      <div id="calGrid" style="display:contents"></div>
+    </div>
+    <div class="cal-leg" style="margin-top:14px">
+      <div class="cal-leg-section">
+        <span class="cal-leg-title">😴</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#ef4444"></span>&lt;5h</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#f97316"></span>5–6.5h</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#eab308"></span>6.5–7h</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#22c55e"></span>7–9h</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#a855f7"></span>&gt;9h</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#e5e7eb"></span>無</span>
+      </div>
+      <div class="cal-leg-section" style="margin-top:4px">
+        <span class="cal-leg-title">🍽</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#22c55e"></span>&lt;1500</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#eab308"></span>1500–2000</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#f97316"></span>2000–2500</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#ef4444"></span>&gt;2500</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#e5e7eb"></span>無</span>
+      </div>
+      <div class="cal-leg-section" style="margin-top:4px">
+        <span class="cal-leg-title">💪</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#6366f1"></span>重訓</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#f97316"></span>有氧</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#8b5cf6"></span>教練課</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#22c55e"></span>居家</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#d1d5db"></span>休息</span>
+        <span class="cal-leg-item"><span class="cal-dot" style="background:#e5e7eb"></span>無</span>
+      </div>
+    </div>
+  </div>
+  <div class="cal-detail" id="calDetail" style="display:none">
+    <h2 id="calDetailTitle"></h2>
+    <div id="calDetailBody"></div>
+  </div>
+</div>
+</div>
+
 <!-- ══ SLEEP ══ -->
-<div id="tab-sleep" class="tab on">
+<div id="tab-sleep" class="tab">
 <div class="page">
   <div class="sg">
     <div class="sc"><div class="sl">最新一筆</div><div class="sv" id="ss1">—</div><div id="ss1b"></div><div class="ss" id="ss1d"></div></div>
@@ -324,6 +405,45 @@ tbody td{padding:10px;vertical-align:top}
 </div>
 </div>
 
+<!-- ══ HEALTH ══ -->
+<div id="tab-health" class="tab">
+<div class="page">
+  <div class="sg">
+    <div class="sc"><div class="sl">本週保健品天數</div><div class="sv" id="hs1">—</div><div class="ss" id="hs1s"></div></div>
+    <div class="sc"><div class="sl">本週種類</div><div class="sv" id="hs2">—</div><div class="ss">不重複品項</div></div>
+    <div class="sc"><div class="sl">最新一筆</div><div class="sv" id="hs3" style="font-size:16px">—</div><div class="ss" id="hs3d"></div></div>
+    <div class="sc"><div class="sl">身體狀況記錄</div><div class="sv" id="hs4">—</div><div class="ss">有備註的天數</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <h2 id="hft">＋ 新增健康紀錄</h2>
+      <form id="hForm" onsubmit="hSub(event)">
+        <input type="hidden" id="hId">
+        <div class="fg"><label>日期</label><input type="date" id="hDate" required></div>
+        <div class="fg"><label>品項名稱</label><input type="text" id="hName" placeholder="例：魚油、維他命C、鐵劑" required></div>
+        <div class="r2">
+          <div class="fg"><label>份量／顆數</label><input type="text" id="hAmount" placeholder="例：1顆、500mg"></div>
+          <div class="fg"><label>服用時間</label>
+            <select id="hTiming"><option>早餐後</option><option>午餐後</option><option>晚餐後</option><option>睡前</option><option>空腹</option><option>其他</option></select>
+          </div>
+        </div>
+        <div class="fg"><label>身體狀況 / 備註</label><textarea id="hNote" rows="3" placeholder="例：頭痛、生理期第1天、感覺比較累…"></textarea></div>
+        <button type="submit" class="bm" id="hBtn">新增</button>
+        <button type="button" class="bc" id="hCan" onclick="hReset()">取消編輯</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>本週保健品紀錄</h2>
+      <div id="hWeekList" style="display:flex;flex-direction:column;gap:8px;min-height:60px"></div>
+    </div>
+  </div>
+  <div class="card"><h2>歷史紀錄</h2><div class="tw"><table>
+    <thead><tr><th>日期</th><th>品項</th><th>份量</th><th>時間</th><th>身體狀況</th><th></th></tr></thead>
+    <tbody id="hTbody"></tbody>
+  </table></div></div>
+</div>
+</div>
+
 <script>
 // ── FIREBASE ───────────────────────────────────────────────────────────────
 const FB_CONFIG = {
@@ -413,8 +533,8 @@ const ESEED=[
 ];
 
 // ── STORAGE ────────────────────────────────────────────────────────────────
-const SK='lt_s',DK='lt_d',EK='lt_e';
-let sR=[],dR=[],eR=[],sN=200,dN=200,eN=200;
+const SK='lt_s',DK='lt_d',EK='lt_e',HK='lt_h';
+let sR=[],dR=[],eR=[],hR=[],sN=200,dN=200,eN=200,hN=200;
 let sC=null,dC=null,eC=null;
 
 function loadLocal(){
@@ -424,12 +544,13 @@ function loadLocal(){
     localStorage.setItem(key,JSON.stringify({records:arr,nextId:n}));
     return n;
   }
-  sN=L(SK,SSEED,sR,200);dN=L(DK,DSEED,dR,200);eN=L(EK,ESEED,eR,200);
+  sN=L(SK,SSEED,sR,200);dN=L(DK,DSEED,dR,200);eN=L(EK,ESEED,eR,200);hN=L(HK,[],hR,200);
 }
 function saveLocal(){
   localStorage.setItem(SK,JSON.stringify({records:sR,nextId:sN}));
   localStorage.setItem(DK,JSON.stringify({records:dR,nextId:dN}));
   localStorage.setItem(EK,JSON.stringify({records:eR,nextId:eN}));
+  localStorage.setItem(HK,JSON.stringify({records:hR,nextId:hN}));
 }
 async function saveCloud(){
   if(!fbUser)return;
@@ -439,6 +560,7 @@ async function saveCloud(){
       sleep:{records:sR,nextId:sN},
       diet:{records:dR,nextId:dN},
       exercise:{records:eR,nextId:eN},
+      health:{records:hR,nextId:hN},
       updatedAt:Date.now()
     });
     setSyncStatus('☁ 已同步','');
@@ -458,6 +580,7 @@ async function loadCloud(){
     if(d.sleep){sR.push(...(d.sleep.records||[]));sN=d.sleep.nextId||200;}
     if(d.diet){dR.push(...(d.diet.records||[]));dN=d.diet.nextId||200;}
     if(d.exercise){eR.push(...(d.exercise.records||[]));eN=d.exercise.nextId||200;}
+    if(d.health){hR.push(...(d.health.records||[]));hN=d.health.nextId||200;}
     saveLocal();
     return true;
   }catch(e){return false;}
@@ -498,7 +621,7 @@ function initAuth(){
         // first login → push local seed data to cloud
         await saveCloud();
       }
-      renderS();renderD();renderE();renderTips();
+      renderCal();renderS();renderD();renderE();renderH();renderTips();
       setSyncStatus('☁ 已同步','');
     }
   });
@@ -949,6 +1072,118 @@ function confirmAI(){
   setTimeout(()=>closeAI(),1800);
 }
 
+// ── CALENDAR ───────────────────────────────────────────────────────────────
+let calY=new Date().getFullYear(),calM=new Date().getMonth(),calSel=null;
+function renderCal(){
+  const months=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  document.getElementById('calTitle').textContent=`${calY} 年 ${months[calM]}`;
+  const first=new Date(calY,calM,1),last=new Date(calY,calM+1,0);
+  let dow=first.getDay();dow=dow===0?6:dow-1;
+  const todStr=today(),cells=[];
+  for(let i=0;i<dow;i++)cells.push('<div class="cal-cell empty"></div>');
+  for(let d=1;d<=last.getDate();d++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isT=ds===todStr,isSel=ds===calSel;
+    const sr=sR.find(r=>r.date===ds),dr=dR.find(r=>r.date===ds),er=eR.find(r=>r.date===ds);
+    const sdot=sr?sq(sr.h).bg:'#e5e7eb',ddot=dr?cc(mid(dr)):'#e5e7eb',edot=er?ec(er.type):'#e5e7eb';
+    cells.push(`<div class="cal-cell${isT?' today':''}${isSel?' sel':''}" onclick="calClick('${ds}')">
+      <div class="cal-num">${d}</div>
+      <div class="cal-dots">
+        <div class="cal-dot" style="background:${sdot}"></div>
+        <div class="cal-dot" style="background:${ddot}"></div>
+        <div class="cal-dot" style="background:${edot}"></div>
+      </div>
+    </div>`);
+  }
+  document.getElementById('calGrid').innerHTML=cells.join('');
+  if(calSel)renderCalDetail(calSel);
+}
+function calPrev(){if(calM===0){calY--;calM=11;}else calM--;renderCal();}
+function calNext(){if(calM===11){calY++;calM=0;}else calM++;renderCal();}
+function calClick(ds){
+  calSel=ds;
+  document.getElementById('calDetail').style.display='block';
+  renderCal();
+}
+function renderCalDetail(ds){
+  document.getElementById('calDetailTitle').textContent=`${fd(ds)} 當日紀錄`;
+  const sr=sR.find(r=>r.date===ds),dr=dR.find(r=>r.date===ds),er=eR.find(r=>r.date===ds),hr=hR.filter(r=>r.date===ds);
+  let h='';
+  // Sleep
+  if(sr){const q=sq(sr.h);h+=`<div class="det-sec"><div class="det-icon">😴</div><div class="det-body">${sr.s||'—'} → ${sr.w||'—'} ｜ <b style="color:${q.t}">${fh(sr.h)}</b> <span class="badge" style="background:${q.bg}20;color:${q.t};font-size:11px">${q.l}</span>${sr.note?`<br><span style="color:var(--t2);font-size:12px">${sr.note}</span>`:''}</div></div>`;}
+  else h+=`<div class="det-sec"><div class="det-icon">😴</div><div class="det-body" style="color:var(--t2)">無睡眠紀錄</div></div>`;
+  // Diet
+  if(dr){h+=`<div class="det-sec"><div class="det-icon">🍽</div><div class="det-body"><b style="color:${cc(mid(dr))}">${fcal(dr)} kcal</b>${dr.prot?` ・蛋白質 <b>${dr.prot}g</b>`:''}${dr.water?` ・水 ${dr.water}ml`:''}${dr.details?`<div class="pre" style="margin-top:5px">${dr.details}</div>`:''}</div></div>`;}
+  else h+=`<div class="det-sec"><div class="det-icon">🍽</div><div class="det-body" style="color:var(--t2)">無飲食紀錄</div></div>`;
+  // Exercise
+  if(er){const c=ec(er.type);h+=`<div class="det-sec"><div class="det-icon">💪</div><div class="det-body"><span class="tag" style="background:${c}20;color:${c}">${er.type}</span> ${er.int}強度${er.details?`<div class="pre" style="margin-top:5px">${er.details}</div>`:''}</div></div>`;}
+  else h+=`<div class="det-sec"><div class="det-icon">💪</div><div class="det-body" style="color:var(--t2)">無運動紀錄</div></div>`;
+  // Health
+  if(hr.length){h+=`<div class="det-sec"><div class="det-icon">💊</div><div class="det-body">${hr.map(r=>`<div>${r.name}${r.amount?' '+r.amount:''} ・${r.timing}${r.note?`<br><span style="color:var(--t2);font-size:12px">${r.note}</span>`:''}</div>`).join('')}</div></div>`;}
+  document.getElementById('calDetailBody').innerHTML=h;
+}
+
+// ── HEALTH ─────────────────────────────────────────────────────────────────
+function hSub(e){
+  e.preventDefault();
+  const id=document.getElementById('hId').value;
+  const r={id:id?+id:hN++,date:document.getElementById('hDate').value,name:document.getElementById('hName').value.trim(),amount:document.getElementById('hAmount').value.trim(),timing:document.getElementById('hTiming').value,note:document.getElementById('hNote').value.trim()};
+  if(id){const i=hR.findIndex(x=>x.id===+id);if(i!==-1)hR[i]=r;}else hR.push(r);
+  save();renderH();hReset();
+}
+function hEdit(id){
+  const r=hR.find(x=>x.id===id);if(!r)return;
+  document.getElementById('hId').value=id;document.getElementById('hDate').value=r.date;
+  document.getElementById('hName').value=r.name;document.getElementById('hAmount').value=r.amount||'';
+  document.getElementById('hTiming').value=r.timing;document.getElementById('hNote').value=r.note||'';
+  document.getElementById('hft').textContent='✏️ 編輯健康紀錄';document.getElementById('hBtn').textContent='儲存';document.getElementById('hCan').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function hDel(id){if(!confirm('確定刪除？'))return;hR=hR.filter(x=>x.id!==id);save();renderH();}
+function hReset(){
+  document.getElementById('hId').value='';document.getElementById('hForm').reset();document.getElementById('hDate').value=today();
+  document.getElementById('hft').textContent='＋ 新增健康紀錄';document.getElementById('hBtn').textContent='新增';document.getElementById('hCan').style.display='none';
+}
+function renderH(){rHStats();rHWeek();rHTable();}
+function rHStats(){
+  const ws=wkStart(),wk=hR.filter(r=>r.date>=ws);
+  const wkDays=new Set(wk.map(r=>r.date)).size;
+  const wkItems=new Set(wk.map(r=>r.name)).size;
+  document.getElementById('hs1').innerHTML=`${wkDays} <span>天</span>`;
+  document.getElementById('hs1s').textContent='本週';
+  document.getElementById('hs2').innerHTML=`${wkItems} <span>種</span>`;
+  const last=srt(hR)[srt(hR).length-1];
+  if(last){document.getElementById('hs3').textContent=last.name;document.getElementById('hs3d').textContent=fd(last.date);}
+  const withNote=hR.filter(r=>r.note);
+  document.getElementById('hs4').innerHTML=`${new Set(withNote.map(r=>r.date)).size} <span>天</span>`;
+}
+function rHWeek(){
+  const ws=wkStart(),wk=srt(hR).filter(r=>r.date>=ws);
+  const el=document.getElementById('hWeekList');
+  if(!wk.length){el.innerHTML='<div style="color:var(--t2);font-size:13px">本週尚無記錄</div>';return;}
+  // Group by date
+  const byDate={};
+  wk.forEach(r=>{if(!byDate[r.date])byDate[r.date]=[];byDate[r.date].push(r);});
+  el.innerHTML=Object.entries(byDate).sort().reverse().map(([d,rs])=>`
+    <div style="border:1px solid var(--bd);border-radius:8px;padding:8px 12px">
+      <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">${fd(d)}</div>
+      ${rs.map(r=>`<div style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:3px">
+        <span style="background:#f0f4ff;color:#6366f1;padding:1px 8px;border-radius:10px;font-size:12px">${r.name}</span>
+        <span style="color:var(--t2)">${r.amount||''} ${r.timing}</span>
+      </div>${r.note?`<div style="font-size:12px;color:var(--t2);margin-top:2px">🩺 ${r.note}</div>`:''}`).join('')}
+    </div>`).join('');
+}
+function rHTable(){
+  document.getElementById('hTbody').innerHTML=srt(hR).reverse().map(r=>`<tr>
+    <td style="font-weight:500;white-space:nowrap">${fd(r.date)}</td>
+    <td style="font-weight:600">${r.name}</td>
+    <td style="color:var(--t2)">${r.amount||'—'}</td>
+    <td style="white-space:nowrap;color:var(--t2)">${r.timing}</td>
+    <td style="color:var(--t2);font-size:13px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.note||''}">${r.note||'—'}</td>
+    <td><button class="act" onclick="hEdit(${r.id})">✏️</button><button class="act" onclick="hDel(${r.id})">🗑</button></td>
+  </tr>`).join('');
+}
+
 // ── WEEKLY TIPS ────────────────────────────────────────────────────────────
 function renderTips(){
   const tips=[];
@@ -1017,9 +1252,9 @@ document.getElementById('expBtn').addEventListener('click',()=>{
 });
 
 // ── INIT ───────────────────────────────────────────────────────────────────
-['sDate','dDate','eDate'].forEach(id=>document.getElementById(id).value=today());
+['sDate','dDate','eDate','hDate'].forEach(id=>document.getElementById(id).value=today());
 loadLocal();
-renderS();renderD();renderE();renderTips();
+renderCal();renderS();renderD();renderE();renderH();renderTips();
 updateAuthUI();
 initAuth();
 </script>
