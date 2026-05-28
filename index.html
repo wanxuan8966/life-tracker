@@ -134,6 +134,8 @@ tbody td{padding:10px;vertical-align:top}
 .tip.good{background:rgba(34,197,94,.25)}
 .tip.warn{background:rgba(251,191,36,.25)}
 .tip.bad{background:rgba(239,68,68,.25)}
+@keyframes editPulse{0%{box-shadow:0 0 0 0 #6366f140;border-color:var(--p)}50%{box-shadow:0 0 0 8px transparent;border-color:var(--p)}100%{box-shadow:0 0 0 0 transparent;border-color:var(--bd)}}
+.edit-flash{animation:editPulse 1.2s ease;border:2px solid var(--p) !important}
 /* ── Training Tab ── */
 .ex-sel{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;font-size:14px;color:var(--t);background:#fafafa;font-family:inherit;margin-bottom:12px}
 .ex-sel:focus{outline:none;border-color:var(--p);background:#fff}
@@ -813,6 +815,15 @@ function initAuth(){
 
 // ── UTILS ──────────────────────────────────────────────────────────────────
 function srt(a){return[...a].sort((a,b)=>a.date.localeCompare(b.date))}
+function flashEdit(formId){
+  const el=document.getElementById(formId);if(!el)return;
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  const card=el.closest('.card');if(!card)return;
+  card.classList.remove('edit-flash');
+  void card.offsetWidth; // force reflow
+  card.classList.add('edit-flash');
+  setTimeout(()=>card.classList.remove('edit-flash'),1500);
+}
 function today(){return new Date().toISOString().split('T')[0]}
 function fd(d){const dt=new Date(d+'T00:00:00');return`${dt.getMonth()+1}/${dt.getDate()} ${'日一二三四五六'[dt.getDay()]}`}
 function ch(s,w){
@@ -900,7 +911,7 @@ function sEdit(id){
   const r=sR.find(x=>x.id===id);if(!r)return;
   document.getElementById('sId').value=id;document.getElementById('sDate').value=r.date;document.getElementById('sSleep').value=r.s||'';document.getElementById('sWake').value=r.w||'';document.getElementById('sHrs').value=r.h!=null?r.h:'';document.getElementById('sNote').value=r.note||'';
   document.getElementById('sft').textContent='✏️ 編輯睡眠紀錄';document.getElementById('sBtn').textContent='儲存';document.getElementById('sCan').style.display='block';
-  sCalc();window.scrollTo({top:0,behavior:'smooth'});
+  sCalc();flashEdit('sForm');
 }
 function sDel(id){if(!confirm('確定刪除？'))return;sR=sR.filter(x=>x.id!==id);save();renderS();}
 function sReset(){
@@ -964,7 +975,7 @@ function dEdit(id){
   document.getElementById('dProt').value=r.prot||'';document.getElementById('dWater').value=r.water||'';
   document.getElementById('dDetails').value=r.details||'';document.getElementById('dNote').value=r.note||'';
   document.getElementById('dft').textContent='✏️ 編輯飲食紀錄';document.getElementById('dBtn').textContent='儲存';document.getElementById('dCan').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  flashEdit('dForm');
 }
 function dDel(id){if(!confirm('確定刪除？'))return;dR=dR.filter(x=>x.id!==id);save();renderD();}
 function dReset(){
@@ -1025,7 +1036,7 @@ function eEdit(id){
   document.getElementById('eType').value=r.type;document.getElementById('eInt').value=r.int;
   document.getElementById('eDetails').value=r.details||'';document.getElementById('eNote').value=r.note||'';
   document.getElementById('eft').textContent='✏️ 編輯運動紀錄';document.getElementById('eBtn').textContent='儲存';document.getElementById('eCan').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  flashEdit('eForm');
 }
 function eDel(id){if(!confirm('確定刪除？'))return;eR=eR.filter(x=>x.id!==id);save();renderE();}
 function eReset(){
@@ -1435,7 +1446,7 @@ function hEdit(id){
   document.getElementById('hName').value=r.name;document.getElementById('hAmount').value=r.amount||'';
   document.getElementById('hTiming').value=r.timing;document.getElementById('hNote').value=r.note||'';
   document.getElementById('hft').textContent='✏️ 編輯健康紀錄';document.getElementById('hBtn').textContent='儲存';document.getElementById('hCan').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  flashEdit('hForm');
 }
 function hDel(id){if(!confirm('確定刪除？'))return;hR=hR.filter(x=>x.id!==id);save();renderH();}
 function hReset(){
@@ -1494,7 +1505,7 @@ function tEdit(id){
   const r=tR.find(x=>x.id===id);if(!r)return;
   document.getElementById('tId').value=id;document.getElementById('tDate').value=r.date;document.getElementById('tEx').value=r.exercise;document.getElementById('tWt').value=r.weight;document.getElementById('tSets').value=r.sets;document.getElementById('tReps').value=r.reps;document.getElementById('tNote').value=r.note||'';
   document.getElementById('tft').textContent='✏️ 編輯訓練紀錄';document.getElementById('tBtn').textContent='儲存';document.getElementById('tCan').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  flashEdit('tForm');
 }
 function tDel(id){if(!confirm('確定刪除？'))return;tR=tR.filter(x=>x.id!==id);save();renderT();}
 function tReset(){
@@ -1729,7 +1740,7 @@ function wEdit(id){
   const r=wR.find(x=>x.id===id);if(!r)return;
   document.getElementById('wId').value=id;document.getElementById('wDate').value=r.date;document.getElementById('wKg').value=r.weight;document.getElementById('wFat').value=r.fat!=null?r.fat:'';document.getElementById('wMuscle').value=r.muscle!=null?r.muscle:'';document.getElementById('wNote').value=r.note||'';
   document.getElementById('wft').textContent='✏️ 編輯體重紀錄';document.getElementById('wBtn').textContent='儲存';document.getElementById('wCan').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  flashEdit('wForm');
 }
 function wDel(id){if(!confirm('確定刪除？'))return;wR=wR.filter(x=>x.id!==id);save();renderW();}
 function wReset(){
