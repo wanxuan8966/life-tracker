@@ -662,7 +662,7 @@ const ESEED=[
   {id:13,date:"2026-05-27",type:"居家",int:"低",
    details:"核心影片 × 2組\n（屈膝捲腹30s、腿部交叉30s、蛙式屈膝30s、空中自行車30s、摸膝捲腹30s、臀橋30s、拉伸30s）\n棒式30秒 × 3組\n超慢跑 10分鐘\n瘦手臂/上肢影片 × 3組\n（直臂繞肩30s、向後掰掰手1.5kg啞鈴30s、W眼鏡蛇手30s、招財貓手30s）",note:"居家低強度：核心+手臂肩背啟動+輕有氧"},
   {id:14,date:"2026-05-28",type:"有氧",int:"高",
-   details:"跳床有氧課 19:10–20:10（60分鐘）",note:"頂著睡眠不足撐完整場，大量出汗"},
+   details:"跳床有氧課 19:10–20:10（60分鐘）\n第一次跳床，跟不太上但完整撐完\n最後5-10分鐘：捲腹、核心訓練、拉伸",note:"第一次跳床，非常累大量出汗，頂著睡眠不足完課"},
 ];
 const TSEED=[
   {id:1,date:"2026-05-15",exercise:"坐姿髖外展",weight:20,sets:3,reps:15,note:""},
@@ -684,6 +684,17 @@ const TSEED=[
   {id:17,date:"2026-05-24",exercise:"坐姿划船",weight:17.5,sets:3,reps:15,note:"最後一組13下"},
   {id:18,date:"2026-05-24",exercise:"滑輪下拉",weight:19,sets:3,reps:15,note:"最後一組差點撐完"},
 ];
+// 一次性資料修正
+function migrateERecords(){
+  let changed=false;
+  const r=eR.find(r=>r.date==="2026-05-28"&&r.type==="有氧"&&r.note==="頂著睡眠不足撐完整場，大量出汗");
+  if(r){
+    r.details="跳床有氧課 19:10–20:10（60分鐘）\n第一次跳床，跟不太上但完整撐完\n最後5-10分鐘：捲腹、核心訓練、拉伸";
+    r.note="第一次跳床，非常累大量出汗，頂著睡眠不足完課";
+    changed=true;
+  }
+  return changed;
+}
 // 標準動作名稱對照表
 const EX_NORMALIZE={'髖外展':'坐姿髖外展','內夾':'坐姿內夾','划船':'坐姿划船','深蹲':'高腳杯深蹲','壺鈴深蹲':'高腳杯深蹲','硬舉':'壺鈴硬舉'};
 function normalizeTExercises(){
@@ -803,8 +814,9 @@ function initAuth(){
         const existingWDates=new Set(wR.map(r=>r.date));
         const missingW=WSEED.filter(r=>!existingWDates.has(r.date));
         if(missingW.length){missingW.forEach(r=>wR.push({...r,id:wN++}));needSync=true;}
-        // 修正舊的動作名稱
+        // 修正舊的動作名稱與資料
         if(normalizeTExercises())needSync=true;
+        if(migrateERecords())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
       renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
