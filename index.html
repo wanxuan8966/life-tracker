@@ -567,7 +567,7 @@ async function loadCloud(){
     const snap=await fbDB.ref('users/'+fbUser.uid).once('value');
     const d=snap.val();
     if(!d)return false;
-    sR=[];dR=[];eR=[];
+    sR=[];dR=[];eR=[];hR=[];
     if(d.sleep){sR.push(...(d.sleep.records||[]));sN=d.sleep.nextId||200;}
     if(d.diet){dR.push(...(d.diet.records||[]));dN=d.diet.nextId||200;}
     if(d.exercise){eR.push(...(d.exercise.records||[]));eN=d.exercise.nextId||200;}
