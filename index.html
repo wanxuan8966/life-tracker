@@ -1403,7 +1403,7 @@ async function geminiParse(txt,key){
 {"date":"YYYY-MM-DD","sleep":{"found":true/false,"sleepTime":"HH:MM或null","wakeTime":"HH:MM或null","hours":數字或null,"note":"string"},"diet":{"found":true/false,"calMin":數字或null,"calMax":數字或null,"prot":數字或null,"water":數字或null,"details":"string","note":"string"},"exercise":{"found":true/false,"type":"重訓|有氧|教練課|居家|混合|休息|未記錄","intensity":"高|中|低|無","details":"string","note":"string"}}
 
 其他規則：時間用24小時制；凌晨1點=01:00；昨天/前天請推算日期；沒提到的資料 found:false`;
-  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,{
+  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
   });
