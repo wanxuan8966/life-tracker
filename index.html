@@ -1438,10 +1438,10 @@ async function geminiParse(txt,key){
 {"date":"YYYY-MM-DD","sleep":{"found":true/false,"sleepTime":"HH:MM或null","wakeTime":"HH:MM或null","hours":數字或null,"note":"string"},"diet":{"found":true/false,"calMin":數字或null,"calMax":數字或null,"prot":數字或null,"water":數字或null,"details":"string","note":"string"},"exercise":{"found":true/false,"type":"重訓|有氧|教練課|居家|混合|休息|未記錄","intensity":"高|中|低|無","details":"string","note":"string"}}
 
 其他規則：時間用24小時制；凌晨1點=01:00；昨天/前天請推算日期；沒提到的資料 found:false`;
-  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-  });
+  const gOpts={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})};
+  const gUrl=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`;
+  let res=await fetch(gUrl,gOpts);
+  if(res.status===429){await new Promise(r=>setTimeout(r,4000));res=await fetch(gUrl,gOpts);}
   if(!res.ok)throw new Error(`Gemini API 錯誤 ${res.status}`);
   const data=await res.json();
   const raw=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
@@ -1490,6 +1490,51 @@ function ruleSleep(txt){
   const noteM=txt.match(/睡[眠覺].{0,20}(?:不足|不好|夠|好|差|亂|偏晚|偏早)/);
   return{found:true,sleepTime,wakeTime,hours,note:noteM?noteM[0]:''};
 }
+const FOOD_DB=[
+  // ── 超商包裝 ──
+  {n:['統一陽光低糖高纖豆漿','低糖高纖豆漿','陽光低糖豆漿'],cal:115,prot:8.5},
+  {n:['統一陽光無加糖高纖豆漿','無加糖高纖豆漿','陽光無糖豆漿'],cal:185,prot:15.3},
+  {n:['義美低糖豆奶','低糖豆奶'],cal:104,prot:7.5},
+  {n:['超能蛋白飲','超能蛋白飲奶茶'],cal:194,prot:20.3},
+  {n:['全家茶碗蒸','茶碗蒸'],cal:82,prot:7.5},
+  {n:['老協珍滴雞精','滴雞精'],cal:20,prot:4},
+  {n:['茶葉蛋','超商茶葉蛋'],cal:75,prot:6.6},
+  {n:['多力多滋 19g','多力多滋'],cal:99,prot:1.3},
+  {n:['Pringles Original Minis','品客Minis','Pringles'],cal:98,prot:1},
+  {n:['翠菓子天天Bites綜合堅果','天天Bites','綜合堅果'],cal:122,prot:4},
+  {n:['7-11黑胡椒雞柳條','黑胡椒雞柳條','黑胡椒雞柳'],cal:150,prot:25.4},
+  {n:['7-11凱薩雞肉沙拉','凱薩雞肉沙拉'],cal:150,prot:8.9},
+  {n:['7-11蛋白餐盒','蛋白餐盒'],cal:300,prot:25},
+  {n:['鮪魚玉米可朗芙','鮪魚可朗芙'],cal:200,prot:8},
+  {n:['紀文黑麻油薑汁豆腐麵','豆腐麵'],cal:220,prot:10},
+  // ── 飲料店 ──
+  {n:['茶湯會鐵觀音觀音拿鐵微糖','觀音拿鐵微糖','鐵觀音觀音拿鐵'],cal:250,prot:5},
+  {n:['得正焙烏龍鮮奶','烏龍鮮奶'],cal:150,prot:4},
+  {n:['迷客夏伯爵拿鐵微糖','伯爵拿鐵'],cal:200,prot:5},
+  {n:['鶴茶樓藝妓那堤微糖','藝妓那堤'],cal:200,prot:5},
+  {n:['有糖豆漿','超商豆漿'],cal:140,prot:7},
+  // ── 常見食物 ──
+  {n:['水煮蛋','全熟水煮蛋','溏心蛋'],cal:78,prot:6.3},
+  {n:['好食肌松阪豬餐盒','松阪豬餐盒','好食肌松阪豬'],cal:490,prot:30},
+  {n:['好餓豬五花健康餐盒','好餓豬五花'],cal:700,prot:35},
+  {n:['鹽水雞','鹽水雞整份'],cal:300,prot:32},
+  {n:['氣炸雞塊','氣炸雞塊5塊'],cal:200,prot:14},
+  {n:['潤餅'],cal:475,prot:10},
+  {n:['起司蛋餅','蛋餅'],cal:220,prot:10},
+  {n:['起司厚片','起司厚片吐司'],cal:300,prot:10},
+  {n:['韓國馬鈴薯泡麵','馬鈴薯泡麵'],cal:530,prot:13},
+  {n:['白飯一碗','白飯（一碗）'],cal:248,prot:4},
+  {n:['白飯半碗','白飯（半碗）'],cal:124,prot:2},
+];
+function lookupFoodsFromDB(txt){
+  let cal=0,prot=0;const found=[];
+  for(const f of FOOD_DB){
+    for(const name of f.n){
+      if(txt.includes(name)){cal+=f.cal;prot+=f.prot;found.push(name);break;}
+    }
+  }
+  return{cal,prot,found};
+}
 function ruleDiet(txt){
   const hasDiet=/早餐|午餐|晚餐|早午餐|下午茶|宵夜|吃了|喝了|熱量|[卡kcalKcal]|蛋白質|飯|便當/.test(txt);
   if(!hasDiet)return{found:false};
@@ -1514,10 +1559,15 @@ function ruleDiet(txt){
   }
   const waterM=txt.match(/(?:水|飲水|喝水)\s*(?:喝了?|約)?\s*(\d{3,4})\s*(?:ml|cc|毫升)/i);
   const water=waterM?parseInt(waterM[1]):null;
+  // 沒有明確熱量/蛋白質時，用食品 DB 查
+  const db=lookupFoodsFromDB(txt);
+  if(calMin===null&&db.cal>0){calMin=calMax=db.cal;}
+  if(prot===null&&db.prot>0){prot=Math.round(db.prot);}
   const meals=[];
   const mealRe=/(早餐|午餐|晚餐|早午餐|下午茶|宵夜|早上|中午|下午|晚上)[：:是]?\s*([^，,。！!?\n]{3,50})/g;
   let mm;while((mm=mealRe.exec(txt))!==null)meals.push(`${mm[1]}: ${mm[2].trim()}`);
-  return{found:true,calMin,calMax,prot,water,details:meals.join('\n'),note:''};
+  const noteStr=db.found&&db.found.length&&calMin===db.cal?`已從食品DB查到：${db.found.join('、')}`:'';
+  return{found:true,calMin,calMax,prot,water,details:meals.join('\n'),note:noteStr};
 }
 function ruleExercise(txt){
   const exKeys=/重訓|健身|練[背胸腿腹肩]|深蹲|硬舉|划船|下拉|臀推|內夾|外展|引體|棒式|捲腹|跑步|慢跑|有氧|教練課|居家運動|核心/;
