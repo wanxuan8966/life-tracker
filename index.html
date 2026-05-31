@@ -1502,11 +1502,16 @@ function ruleDiet(txt){
     else{
       const allCals=[...txt.matchAll(/(?:約|大約|共)?\s*(\d{3,4})\s*(?:kcal|大卡|卡)/gi)].map(m=>parseInt(m[1]));
       if(allCals.length===1){calMin=calMax=allCals[0];}
-      else if(allCals.length>1){calMin=Math.min(...allCals);calMax=Math.max(...allCals);}
+      else if(allCals.length>1){const s=allCals.reduce((a,b)=>a+b,0);calMin=calMax=s;}
     }
   }
-  const protM=txt.match(/(\d{1,3})\s*g\s*蛋白質|蛋白質\s*(\d{1,3})\s*g/);
-  const prot=protM?parseInt(protM[1]||protM[2]):null;
+  const totalProtM=txt.match(/(?:蛋白質?合計|蛋白質?總計|合計蛋白質?|總計蛋白質?)[：:\s]*(\d{1,3}(?:\.\d+)?)\s*g/);
+  let prot=null;
+  if(totalProtM){prot=Math.round(parseFloat(totalProtM[1]));}
+  else{
+    const allProts=[...txt.matchAll(/蛋白質?\s*(\d{1,3}(?:\.\d+)?)\s*g|(\d{1,3}(?:\.\d+)?)\s*g\s*蛋白質?/gi)].map(m=>parseFloat(m[1]||m[2]));
+    if(allProts.length)prot=Math.round(allProts.reduce((a,b)=>a+b,0));
+  }
   const waterM=txt.match(/(?:水|飲水|喝水)\s*(?:喝了?|約)?\s*(\d{3,4})\s*(?:ml|cc|毫升)/i);
   const water=waterM?parseInt(waterM[1]):null;
   const meals=[];
