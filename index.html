@@ -855,6 +855,75 @@ function migrate529_530(){
   }
   return changed;
 }
+function migrate531_606(){
+  let changed=false;
+  // 修正5/30飲食（氣炸雞塊只1塊、滴雞精未喝）
+  const r530d=dR.find(r=>r.date==="2026-05-30");
+  if(r530d&&r530d.cMin===1001){
+    r530d.cMin=760;r530d.cMax=820;r530d.prot=32;r530d.water=1400;
+    r530d.details="下午: 全熟水煮蛋 75kcal 蛋白6.6g\n下午: 富士蘋果 約75kcal\n下午飲料: 西西里氣泡咖啡數口 約35kcal\n晚餐: 炒芥蘭菜小碗 約75kcal 蛋白2g\n晚餐: 煎牛肋條少量 約115kcal 蛋白9g\n點心: WE SWEET開心果可脆Q餅 154.5kcal 蛋白2.6g\n晚餐後: 富士蘋果 約75kcal\n宵夜: 紀文黑麻油薑汁豆腐麵1盒 約300kcal 蛋白12g\n宵夜飲料: 大杯西西里氣泡咖啡 約150kcal\n宵夜: 氣炸雞塊1塊 約50kcal 蛋白2.5g";
+    r530d.note="修正版：雞塊1塊、滴雞精未喝，熱量偏低760-820kcal";
+    changed=true;
+  }
+  const sDates=new Set(sR.map(r=>r.date)),dDates=new Set(dR.map(r=>r.date)),eDates=new Set(eR.map(r=>r.date)),tDates=new Set(tR.map(r=>r.date)),wDates=new Set(wR.map(r=>r.date));
+  // 睡眠
+  [{date:"2026-05-31",s:"04:00",w:"13:00",h:9,note:"時數足夠但作息延後，下午起床後又睡約1小時"},
+   {date:"2026-06-01",s:"05:00",w:"09:00",h:4,note:"睡眠嚴重不足"},
+   {date:"2026-06-02",s:"00:00",w:"08:00",h:8,note:"06:00先醒後繼續睡到08:00，時數足夠"},
+   {date:"2026-06-03",s:"03:00",w:"08:40",h:5.67,note:"睡眠不足，白天到11點都非常累"},
+   {date:"2026-06-04",s:"22:00",w:"05:30",h:7.5,note:"睡眠不錯，可能仍在補睡眠債"},
+   {date:"2026-06-05",s:"23:30",w:"08:50",h:9.33,note:"睡眠充足"},
+   {date:"2026-06-06",s:"05:00",w:"14:00",h:9,note:"時數足夠但作息嚴重延後"},
+  ].forEach(r=>{if(!sDates.has(r.date)){sR.push({...r,id:sN++,energy:null,lowPt:null,headache:false});changed=true;}});
+  // 飲食
+  [{date:"2026-05-31",cMin:1560,cMax:1650,prot:70,water:2000,
+    details:"第一餐: 大室烤糖牛肉吐司 480kcal 蛋白22g\n飲料: 阿薩姆鮮奶茶大杯微糖 250kcal 蛋白6g\n第二餐: 自煮酸菜魚飯白飯1碗 280kcal 蛋白6g\n第二餐: 鯛魚片半片 55kcal 蛋白10g\n第二餐: 雞蛋1顆 75kcal 蛋白6.6g\n第二餐: 娃娃菜菇類 40kcal 蛋白2g\n第二餐: 酸菜魚湯底拌飯 80kcal 蛋白1g\n晚上: 大蒜貝果餅乾幾片 60kcal 蛋白1.5g\n晚上: 蒸蛋2顆 150kcal 蛋白13g\n晚上: 半碗飯 135kcal 蛋白2.5g",
+    note:"腹瀉日，水分電解質流失"},
+   {date:"2026-06-01",cMin:1215,cMax:1490,prot:76,water:2000,
+    details:"早餐: 統一陽光無加糖高纖豆漿 185kcal 蛋白15.3g\n早餐: 茶葉蛋 75kcal 蛋白6.6g\n午餐: 火鍋料（娃娃菜+蛋+鯛魚半片） 195kcal 蛋白20g\n點心: 可樂果原味 126kcal 蛋白2.7g\n點心: 小塊Snickers 52kcal 蛋白0.8g\n飲料: 茶湯會觀音拿鐵大杯微糖（喝幾口） 45kcal 蛋白1.5g\n晚餐: 自煮娃娃菜豬五花鴻禧菇玉米筍豆皮蛋飯 475kcal 蛋白27g\n點心: WE SWEET開心果可可脆Q餅 154.5kcal 蛋白2.6g\n點心: 幾片洋芋片 45kcal 蛋白0.5g",
+    note:""},
+   {date:"2026-06-02",cMin:1450,cMax:1900,prot:73,water:2000,
+    details:"早上飲料: 7-11西西里氣泡檸檬咖啡 150kcal 蛋白1g\n早餐: 茶葉蛋 75kcal 蛋白6.6g\n午餐: 咖哩雞腿排飯（少吃） 325kcal 蛋白16g\n晚餐: 白飯小碗+火鍋菜肉蛋 738kcal 蛋白31.5g\n飲料: 茶湯會觀音拿鐵（1/5杯） 52kcal 蛋白1g\n點心: 開心果可可脆Q餅 154.5kcal 蛋白2.6g\n運動後: 蒸蛋2顆 150kcal 蛋白13g\n運動後: 芥蘭菜 45kcal 蛋白2g",
+    note:"運動後補蒸蛋，收尾不錯"},
+   {date:"2026-06-03",cMin:1500,cMax:1940,prot:66,water:1400,
+    details:"早餐: 起司蛋餅雙醬+九層塔 490kcal 蛋白17g\n飲料: 迷客夏伯爵拿鐵半杯 90kcal 蛋白3g\n午餐: 高麗菜豬五花玉米筍豆皮（無飯） 550kcal 蛋白28.5g\n晚餐: 摩斯大麥海洋珍珠堡 373.5kcal 蛋白9.2g\n晚餐加點: 薯條2塊 45kcal\n晚餐加點: 雞塊2塊 110kcal 蛋白6.5g\n飲料: 紅茶半杯微糖 60kcal",
+    note:"睡眠不足疲勞日"},
+   {date:"2026-06-04",cMin:2530,cMax:3365,prot:118,water:1400,
+    details:"運動前: 水煮蛋 75kcal 蛋白6.6g\n運動前: 奇異果 52kcal 蛋白1g\n運動後早餐: 蘑菇麵+蛋+豬排 750kcal 蛋白34g\n飲料: 中冰奶半杯 105kcal 蛋白2g\n午餐: 炸雞腿便當 850kcal 蛋白35g\n飲料: 鶴茶樓藝妓那堤中杯微糖微冰 215kcal 蛋白6.5g\n晚餐: 肉羹湯 325kcal 蛋白11.5g\n晚餐: 滷肉飯 425kcal 蛋白11.5g\n晚餐: 炸肉條 200kcal 蛋白11.5g\n晚餐: 油豆腐2塊 140kcal 蛋白8g",
+    note:"高熱量高鈉日，隔天可能水腫"},
+   {date:"2026-06-05",cMin:1390,cMax:1755,prot:59,water:1400,
+    details:"早餐: 茶葉蛋 75kcal 蛋白6.6g\n早餐飲料: 7-11西西里氣泡咖啡 150kcal 蛋白1g\n午餐: 大腸麵線 550kcal 蛋白11.5g\n午餐加點: 香腸1根 215kcal 蛋白8.5g\n晚餐: 好食肌松阪豬便當少飯多菜 500kcal 蛋白28g\n飲料: 茶湯會觀音拿鐵微糖微冰半杯 120kcal 蛋白3g",
+    note:"炸雞翅沒吃，觀音拿鐵喝半杯，控制比預期好"},
+   {date:"2026-06-06",cMin:695,cMax:1005,prot:35,water:1400,
+    details:"第一餐: 蘿蔔糕 300kcal 蛋白5.5g\n第一餐: 蛋1顆 75kcal 蛋白6.6g\n第一餐: 豬排 325kcal 蛋白20g\n飲料: 焦糖奶茶中杯半杯 150kcal 蛋白2g",
+    note:"目前只有第一餐，晚餐蛋白質需補充"},
+  ].forEach(r=>{if(!dDates.has(r.date)){dR.push({...r,id:dN++});changed=true;}});
+  // 運動
+  [{date:"2026-05-31",type:"居家",int:"低",details:"簡單拉伸",note:"腹瀉日，僅做輕微拉伸"},
+   {date:"2026-06-01",type:"休息",int:"無",details:"",note:"無正式運動"},
+   {date:"2026-06-02",type:"重訓",int:"中",
+    details:"臀推 槓+兩邊各11.5kg\n壺鈴硬舉 16kg: 2組×20下、1組×15下\n保加利亞分腿蹲 徒手: 左右各1組×10下\n跑步機走路 速度4.8 坡度3: 15分鐘（收操）",
+    note:"臀腿+跑步機收操"},
+   {date:"2026-06-03",type:"休息",int:"無",details:"",note:"睡眠不足疲勞日，無正式運動"},
+   {date:"2026-06-04",type:"重訓",int:"中",
+    details:"坐姿划船 14.5kg(12+2.5): 15下×2組、第3組12下力竭\n輔助引體向上 28.5kg(26+2.5): 1組×10下\n輔助引體向上 31kg(26+2.5+2.5): 2組×10下\n壺鈴硬舉 16kg: 10下×3組\n臀橋 徒手: 30下×2組（收尾）",
+    note:"背部+硬舉+臀橋收尾"},
+   {date:"2026-06-05",type:"未記錄",int:"無",details:"",note:"當日運動未確認"},
+   {date:"2026-06-06",type:"未記錄",int:"無",details:"",note:"尚未提供"},
+  ].forEach(r=>{if(!eDates.has(r.date)){eR.push({...r,id:eN++});changed=true;}});
+  // 訓練紀錄
+  if(!tDates.has("2026-06-02")){
+    [{exercise:"臀推",weight:23,sets:1,reps:10,note:"槓+兩邊各11.5kg中槓片"},{exercise:"壺鈴硬舉",weight:16,sets:2,reps:20,note:"前2組"},{exercise:"壺鈴硬舉",weight:16,sets:1,reps:15,note:"第3組"},{exercise:"保加利亞分腿蹲",weight:0,sets:2,reps:10,note:"徒手，左右各1組"}].forEach(r=>tR.push({...r,id:tN++,date:"2026-06-02"}));changed=true;
+  }
+  if(!tDates.has("2026-06-04")){
+    [{exercise:"坐姿划船",weight:14.5,sets:3,reps:15,note:"12+2.5kg，第3組12下力竭"},{exercise:"輔助引體向上",weight:28.5,sets:1,reps:10,note:"輔助28.5kg(26+2.5)"},{exercise:"輔助引體向上",weight:31,sets:2,reps:10,note:"輔助31kg(26+2.5+2.5)"},{exercise:"壺鈴硬舉",weight:16,sets:3,reps:10,note:""},{exercise:"臀橋",weight:0,sets:2,reps:30,note:"徒手收尾"}].forEach(r=>tR.push({...r,id:tN++,date:"2026-06-04"}));changed=true;
+  }
+  // 體重
+  [{date:"2026-06-02",weight:46.7,fat:24.0,muscle:null,note:"早上08:25量，小米體脂秤"},
+   {date:"2026-06-04",weight:45.9,fat:22.85,muscle:null,note:"早上06:06量，小米體脂秤"},
+  ].forEach(r=>{if(!wDates.has(r.date)){wR.push({...r,id:wN++});changed=true;}});
+  return changed;
+}
 // 標準動作名稱對照表
 const EX_NORMALIZE={'髖外展':'坐姿髖外展','內夾':'坐姿內夾','划船':'坐姿划船','深蹲':'高腳杯深蹲','壺鈴深蹲':'高腳杯深蹲','硬舉':'壺鈴硬舉'};
 function normalizeTExercises(){
@@ -979,6 +1048,7 @@ function initAuth(){
         if(migrateDRecords())needSync=true;
         if(migrateERecords())needSync=true;
         if(migrate529_530())needSync=true;
+        if(migrate531_606())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
       renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
