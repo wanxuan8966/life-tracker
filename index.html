@@ -57,67 +57,102 @@ tbody td{padding:10px;vertical-align:top}
 .pre{white-space:pre-line;font-size:13px;color:var(--t2);max-height:80px;overflow-y:auto;line-height:1.4}
 .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600}
 @media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+/* ── FAB（預設隱藏，手機才顯示）── */
+#fabAI{display:none}
+
 /* ── 手機版（640px 以下）── */
 @media(max-width:640px){
-  /* 防止橫向溢出 */
-  body{overflow-x:hidden}
+  /* ─ 基礎 ─ */
+  body{overflow-x:hidden;padding-bottom:60px}
 
-  /* ─ Header ─ */
-  header{flex-wrap:wrap;padding:0 12px;min-height:unset}
-  .brand{font-size:15px;padding:8px 0;flex:1}
-  .hdr-r{gap:4px;padding:6px 0;flex-wrap:wrap}
+  /* ─ Header：只留 brand + 右側按鈕，nav 移到底部 ─ */
+  header{flex-wrap:nowrap;padding:0 12px;min-height:unset;gap:8px}
+  .brand{font-size:15px;padding:10px 0;flex:1;white-space:nowrap}
+  .hdr-r{gap:4px;flex-shrink:0;flex-wrap:nowrap}
   .hdr-r .bsm{font-size:11px;padding:5px 8px}
-  nav{width:100%;order:3;overflow-x:auto;-webkit-overflow-scrolling:touch;
-      scrollbar-width:none;border-top:1px solid var(--bd);
-      display:flex;gap:0;align-items:stretch}
+  #hdrAI{display:none!important}   /* header 的快速輸入在手機隱藏，改用 FAB */
+  #expBtn{display:none}            /* 匯出 CSV 手機隱藏（少用功能）*/
+
+  /* ─ Nav → 固定底部 Tab Bar ─ */
+  nav{
+    position:fixed;bottom:0;left:0;right:0;
+    width:100%;z-index:300;
+    background:var(--card);
+    border-top:1px solid var(--bd);
+    box-shadow:0 -2px 12px rgba(0,0,0,.08);
+    display:flex;gap:0;align-items:stretch;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    padding-bottom:env(safe-area-inset-bottom);
+    order:unset
+  }
   nav::-webkit-scrollbar{display:none}
-  .tb{white-space:nowrap;flex-shrink:0;font-size:12px;padding:9px 12px}
+  .tb{
+    flex:1;min-width:52px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    font-size:10px;padding:8px 4px 6px;white-space:nowrap;
+    border-bottom:none;gap:2px;line-height:1.2
+  }
+  .tb.on{border-bottom:2px solid var(--p);color:var(--p)}
+
+  /* ─ FAB：快速輸入 ─ */
+  #fabAI{
+    display:flex!important;
+    position:fixed;bottom:68px;right:16px;z-index:250;
+    width:52px;height:52px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff;font-size:22px;
+    align-items:center;justify-content:center;
+    box-shadow:0 4px 18px rgba(99,102,241,.45);
+    cursor:pointer;-webkit-tap-highlight-color:transparent
+  }
 
   /* ─ 頁面 ─ */
-  .page{padding:10px 8px;gap:10px;max-width:100%}
+  .page{padding:12px 10px;gap:12px;max-width:100%}
 
   /* ─ Stats 卡片 2×2 ─ */
   .sg{grid-template-columns:repeat(2,1fr);gap:8px}
-  .sc{padding:10px 12px}
-  .sv{font-size:18px}
+  .sc{padding:12px 12px}
+  .sv{font-size:20px}
   .sl{font-size:10px}
   .ss{font-size:11px}
 
-  /* ─ 日曆：簡化成彩色色條，隱藏文字 ─ */
+  /* ─ 日曆 ─ */
   .cal-wrap{padding:10px 8px}
-  .cal-nav h2{font-size:14px}
+  .cal-nav h2{font-size:15px}
   .cal-cell{min-height:52px;padding:3px 2px;gap:1px}
   .cal-num{font-size:11px;margin-bottom:2px}
-  .cal-row{font-size:0!important;height:5px;padding:0;border-radius:3px;
-           margin-bottom:2px;line-height:1}
+  .cal-row{font-size:0!important;height:5px;padding:0;border-radius:3px;margin-bottom:2px;line-height:1}
   .cal-row.na{display:none}
   .cal-leg{flex-direction:column;gap:3px}
   .cal-leg-section{flex-wrap:wrap;gap:4px}
   .cal-leg-title,.cal-leg-item{font-size:10px}
-  .cal-detail{padding:12px 14px}
-  .det-body{font-size:12px}
+  .cal-detail{padding:14px}
+  .det-body{font-size:13px}
 
   /* ─ 雙欄 → 單欄 ─ */
   .g2{grid-template-columns:1fr;gap:10px}
   .r2{grid-template-columns:1fr}
 
   /* ─ 卡片 ─ */
-  .card{padding:14px 14px;border-radius:10px}
-  .card h2{font-size:14px;margin-bottom:10px}
+  .card{padding:14px;border-radius:12px}
+  .card h2{font-size:15px;margin-bottom:10px}
   .cw{height:190px}
 
-  /* ─ 表格：可橫向滑動 ─ */
+  /* ─ 表格：橫向滑動 ─ */
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
   table{min-width:500px}
-  tbody td{padding:8px 8px;font-size:12px}
+  tbody td{padding:9px 8px;font-size:12px}
   thead th{font-size:10px;padding:6px 8px}
 
-  /* ─ Modal：從底部滑入 ─ */
+  /* ─ 快速輸入 Modal：從底部滑入 ─ */
   .overlay{align-items:flex-end;padding:0}
-  .modal{border-radius:16px 16px 0 0;max-height:88vh;
-         width:100%;max-width:100%;margin:0}
-  .mhd{padding:16px 18px 0}
-  .mbody{padding:14px 18px 28px}
+  .modal{
+    border-radius:20px 20px 0 0;max-height:90vh;
+    width:100%;max-width:100%;margin:0;
+    padding-bottom:env(safe-area-inset-bottom)
+  }
+  .mhd{padding:18px 18px 0}
+  .mbody{padding:14px 18px 24px}
 
   /* ─ Tips bar ─ */
   .tips-bar{padding:8px 12px;gap:8px;flex-wrap:wrap}
@@ -125,10 +160,15 @@ tbody td{padding:10px;vertical-align:top}
 
   /* ─ 其他 ─ */
   .badge,.tag{font-size:11px;padding:2px 6px}
-  .bm{font-size:14px;padding:11px}
-  .fg label{font-size:10px}
-  .fg input,.fg select,.fg textarea{font-size:16px} /* iOS 防放大 */
+  .bm{font-size:14px;padding:12px;border-radius:10px}
+  .fg label{font-size:11px;font-weight:600}
+  .fg input,.fg select,.fg textarea{font-size:16px;padding:10px 12px} /* iOS 防放大 */
+  .fg{margin-bottom:10px}
   .pre{max-height:60px}
+
+  /* ─ 洞察卡片文字 ─ */
+  .insight-msg{font-size:13px}
+  .rcard{font-size:13px}
 }
 /* ── AI Modal ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
@@ -226,6 +266,9 @@ tbody td{padding:10px;vertical-align:top}
 </head>
 <body>
 
+<!-- 手機 FAB：快速輸入 -->
+<button id="fabAI" onclick="openAI()" aria-label="快速輸入">💬</button>
+
 <header>
   <div class="brand">📔 生活紀錄</div>
   <nav>
@@ -238,7 +281,7 @@ tbody td{padding:10px;vertical-align:top}
   </nav>
   <div class="hdr-r">
     <div id="authUI"></div>
-    <button class="bsm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff" onclick="openAI()">💬 快速輸入</button>
+    <button class="bsm" id="hdrAI" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff" onclick="openAI()">💬 快速輸入</button>
     <button class="bsm" id="expBtn">⬇ 匯出 CSV</button>
   </div>
 </header>
