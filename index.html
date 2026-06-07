@@ -967,6 +967,24 @@ function migrate531_606(){
   ].forEach(r=>{if(!wDates.has(r.date)){wR.push({...r,id:wN++});changed=true;}});
   return changed;
 }
+function migrate606_607(){
+  let changed=false;
+  // 補完 6/6 飲食（原本只有第一餐）
+  const r606d=dR.find(r=>r.date==="2026-06-06");
+  if(r606d&&r606d.cMax===1005){
+    r606d.cMin=1120;r606d.cMax=1585;r606d.prot=84;r606d.water=2000;
+    r606d.details="第一餐: 蘿蔔糕 300kcal 蛋白5.5g\n第一餐: 蛋1顆 75kcal 蛋白6.6g\n第一餐: 豬排 325kcal 蛋白20g\n飲料: 焦糖奶茶中杯半杯 150kcal 蛋白2g\n晚餐: 娃娃菜 40kcal 蛋白1.5g\n晚餐: 蛋1顆 75kcal 蛋白6.6g\n晚餐: 豬梅花肉半盒 275kcal 蛋白20g\n晚餐: 鯛魚半盒 150kcal 蛋白25g";
+    r606d.note="補完整版：熱量1120-1585kcal，蛋白質約69-99g";
+    changed=true;
+  }
+  const sDates=new Set(sR.map(r=>r.date)),dDates=new Set(dR.map(r=>r.date)),eDates=new Set(eR.map(r=>r.date));
+  if(!sDates.has("2026-06-07")){sR.push({id:sN++,date:"2026-06-07",s:"06:00",w:"15:00",h:9,note:"時數夠但作息非常延後",energy:null,lowPt:null,headache:false});changed=true;}
+  if(!dDates.has("2026-06-07")){dR.push({id:dN++,date:"2026-06-07",cMin:1445,cMax:2030,prot:100,water:1400,
+    details:"第一餐: 頂呱呱呱呱包 450kcal 蛋白12g\n第一餐: 炸雞腿 425kcal 蛋白30g\n第一餐: 地瓜薯條 325kcal 蛋白3.5g\n飲料: 可樂幾口 35kcal\n晚餐: 娃娃菜 40kcal 蛋白1.5g\n晚餐: 蛋1顆 75kcal 蛋白6.6g\n晚餐: 豬梅花肉半盒 275kcal 蛋白20g\n晚餐: 鯛魚半盒 150kcal 蛋白25g",
+    note:"第一餐炸物高油高鈉；晚餐補回乾淨蛋白質，水1400ml偏低"});changed=true;}
+  if(!eDates.has("2026-06-07")){eR.push({id:eN++,date:"2026-06-07",type:"未記錄",int:"無",details:"",note:"未提供"});changed=true;}
+  return changed;
+}
 // 標準動作名稱對照表
 const EX_NORMALIZE={'髖外展':'坐姿髖外展','內夾':'坐姿內夾','划船':'坐姿划船','深蹲':'高腳杯深蹲','壺鈴深蹲':'高腳杯深蹲','硬舉':'壺鈴硬舉'};
 function normalizeTExercises(){
@@ -1092,6 +1110,7 @@ function initAuth(){
         if(migrateERecords())needSync=true;
         if(migrate529_530())needSync=true;
         if(migrate531_606())needSync=true;
+        if(migrate606_607())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
       renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
