@@ -985,6 +985,49 @@ function migrate606_607(){
   if(!eDates.has("2026-06-07")){eR.push({id:eN++,date:"2026-06-07",type:"未記錄",int:"無",details:"",note:"未提供"});changed=true;}
   return changed;
 }
+function migrate_ex_606_607(){
+  let changed=false;
+  const tDates=new Set(tR.map(r=>r.date));
+  // 更新 6/6 運動
+  const e606=eR.find(r=>r.date==="2026-06-06");
+  if(e606&&e606.type==="未記錄"){
+    e606.type="重訓";e606.int="中";
+    e606.details="坐姿划船 14.5kg: 15下×1組、10下×2組\n滑輪下拉 17kg: 15下×3組\n壺鈴硬舉 16kg: 15下×1組（暖身）\n壺鈴硬舉 20kg: 10下×3組\n高腳杯深蹲 10kg: 10下×3組";
+    e606.note="背部+臀腿混合，下拉穩、硬舉加到20kg";
+    changed=true;
+  }
+  // 更新 6/7 運動
+  const e607=eR.find(r=>r.date==="2026-06-07");
+  if(e607&&e607.type==="未記錄"){
+    e607.type="重訓";e607.int="中";
+    e607.details="坐姿髖外展 20kg: 15下×1組 → 25kg: 15下×1組 → 35kg: 10下×1組（加重）\n坐姿內夾 15kg: 15下×2組（力竭）\n臀推 約66kg(槓20kg+兩邊各2片11.5kg): 12下×2組、10下×1組\n滑輪下拉 19kg: 10下×3組\n坐姿划船 14.5kg: 15下×2組（力竭）";
+    e607.note="臀腿主訓+背部補強，臀推進步明顯，髖外展加到35kg";
+    changed=true;
+  }
+  // 6/6 訓練紀錄
+  if(!tDates.has("2026-06-06")){
+    [{exercise:"坐姿划船",weight:14.5,sets:3,reps:15,note:"第1組15下，後2組10下"},
+     {exercise:"滑輪下拉",weight:17,sets:3,reps:15,note:""},
+     {exercise:"壺鈴硬舉",weight:16,sets:1,reps:15,note:"暖身組"},
+     {exercise:"壺鈴硬舉",weight:20,sets:3,reps:10,note:""},
+     {exercise:"高腳杯深蹲",weight:10,sets:3,reps:10,note:""}
+    ].forEach(r=>tR.push({...r,id:tN++,date:"2026-06-06"}));
+    changed=true;
+  }
+  // 6/7 訓練紀錄
+  if(!tDates.has("2026-06-07")){
+    [{exercise:"坐姿髖外展",weight:20,sets:1,reps:15,note:""},
+     {exercise:"坐姿髖外展",weight:25,sets:1,reps:15,note:""},
+     {exercise:"坐姿髖外展",weight:35,sets:1,reps:10,note:"加重組"},
+     {exercise:"坐姿內夾",weight:15,sets:2,reps:15,note:"力竭"},
+     {exercise:"臀推",weight:66,sets:3,reps:12,note:"槓20kg+兩邊各2片11.5kg，第3組10下"},
+     {exercise:"滑輪下拉",weight:19,sets:3,reps:10,note:""},
+     {exercise:"坐姿划船",weight:14.5,sets:2,reps:15,note:"力竭"}
+    ].forEach(r=>tR.push({...r,id:tN++,date:"2026-06-07"}));
+    changed=true;
+  }
+  return changed;
+}
 // 標準動作名稱對照表
 const EX_NORMALIZE={'髖外展':'坐姿髖外展','內夾':'坐姿內夾','划船':'坐姿划船','深蹲':'高腳杯深蹲','壺鈴深蹲':'高腳杯深蹲','硬舉':'壺鈴硬舉'};
 function normalizeTExercises(){
@@ -1111,6 +1154,7 @@ function initAuth(){
         if(migrate529_530())needSync=true;
         if(migrate531_606())needSync=true;
         if(migrate606_607())needSync=true;
+        if(migrate_ex_606_607())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
       renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
