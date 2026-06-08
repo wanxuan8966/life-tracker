@@ -1986,9 +1986,12 @@ function renderCal(){
       ?`<div class="cal-row" style="background:${sp.bg};color:${sp.txt}">${sHit?'✓ ':''}睡眠：${fh(sr.h)}</div>`
       :`<div class="cal-row na">睡眠：—</div>`;
     const dp=calDietPill(calMid);
-    const dHit=calMid&&calMid>=1500&&calMid<=1800;
+    const dHit=calMid&&calMid>=1500&&calMid<=CAL_MAX;
+    const dOver=calMid&&calMid>CAL_MAX;
+    const dLow=calMid&&calMid<CAL_LOW;
+    const dPrefix=dHit?'✓ ':dOver?'！':'';
     const dLine=dr&&calMid
-      ?`<div class="cal-row" style="background:${dp.bg};color:${dp.txt}">${dHit?'✓ ':''}熱量：${Math.round(calMid)}</div>`
+      ?`<div class="cal-row" style="background:${dp.bg};color:${dp.txt}">${dPrefix}熱量：${Math.round(calMid)}</div>`
       :`<div class="cal-row na">熱量：—</div>`;
     const pp=dr?calProtPill(dr.prot):null;
     const pHit=dr?.prot>=80;
