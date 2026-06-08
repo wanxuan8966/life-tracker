@@ -1255,33 +1255,30 @@ function iv(i){return{高:3,中:2,低:1,無:0}[i]||0}
 function wkStart(){const n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));return m.toISOString().split('T')[0]}
 function pillTxt(bg){const h=bg.replace('#','');const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return(0.299*r+0.587*g+0.114*b)/255>0.65?'#374151':'#fff';}
 // Calendar pill colors: fixed hue per category, shade = quality
+// ── 二元制顏色（達標 vs 未達標）──────────────────────────────────────────────
 function calSleepPill(h){
-  if(h==null)return{bg:'#ede9fe',txt:'#7c3aed'};
-  if(h<5)return{bg:'#c4b5fd',txt:'#4c1d95'};
-  if(h<6.5)return{bg:'#a78bfa',txt:'#4c1d95'};
-  if(h<7)return{bg:'#8b5cf6',txt:'#fff'};
-  if(h<=9)return{bg:'#7c3aed',txt:'#fff'};
-  return{bg:'#6d28d9',txt:'#fff'};
+  if(h==null)return{bg:'#ede9fe',txt:'#9ca3af'};
+  if(h>=7)return{bg:'#7c3aed',txt:'#fff'};      // 達標 深紫
+  return{bg:'#ddd6fe',txt:'#6d28d9'};            // 未達標 淡紫
 }
 function calDietPill(cal){
-  if(!cal)return{bg:'#fce7f3',txt:'#be185d'};
-  if(cal<1500)return{bg:'#fbcfe8',txt:'#9d174d'};
-  if(cal<2000)return{bg:'#f9a8d4',txt:'#9d174d'};
-  if(cal<2500)return{bg:'#ec4899',txt:'#fff'};
-  return{bg:'#be185d',txt:'#fff'};
+  if(!cal)return{bg:'#fce7f3',txt:'#9ca3af'};
+  if(cal>=1500&&cal<=1800)return{bg:'#ec4899',txt:'#fff'};  // 達標 深粉
+  return{bg:'#fce7f3',txt:'#be185d'};                       // 未達標 淡粉
 }
 function calExPill(type,intensity){
-  if(type==='休息'||type==='未記錄')return{bg:'#fef9c3',txt:'#854d0e'};
-  const i={高:{bg:'#ca8a04',txt:'#fff'},中:{bg:'#eab308',txt:'#fff'},低:{bg:'#fde047',txt:'#713f12'},無:{bg:'#fef9c3',txt:'#854d0e'}};
-  return i[intensity]||{bg:'#eab308',txt:'#fff'};
+  if(!type||type==='休息'||type==='未記錄')return{bg:'#fef9c3',txt:'#92400e'};
+  return{bg:'#eab308',txt:'#fff'};  // 有訓練 金黃
 }
 function calWaterPill(w){
-  const r=w/WATER_TARGET;
-  const lbl=r>=1?`✓ ${w}ml`:`${w}/${WATER_TARGET}ml`;
-  if(r>=1)return{bg:'#0369a1',txt:'#fff',lbl};
-  if(r>=0.75)return{bg:'#0284c7',txt:'#fff',lbl};
-  if(r>=0.5)return{bg:'#38bdf8',txt:'#fff',lbl};
-  return{bg:'#bae6fd',txt:'#0369a1',lbl};
+  const hit=w>=WATER_TARGET;
+  const lbl=hit?`✓ ${w}ml`:`${w}/${WATER_TARGET}ml`;
+  return hit?{bg:'#0369a1',txt:'#fff',lbl}:{bg:'#bae6fd',txt:'#0369a1',lbl};
+}
+function calProtPill(prot){
+  if(prot==null)return null;
+  if(prot>=80)return{bg:'#16a34a',txt:'#fff'};   // 達標 深綠
+  return{bg:'#dcfce7',txt:'#166534'};             // 未達標 淡綠
 }
 function dAgo(n){const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0]}
 function mid(r){if(!r.cMin)return null;return r.cMax?(r.cMin+r.cMax)/2:r.cMin}
@@ -1919,22 +1916,27 @@ function renderCal(){
     const sLine=sr&&sr.h!=null
       ?`<div class="cal-row" style="background:${sp.bg};color:${sp.txt}">😴 ${fh(sr.h)}</div>`
       :`<div class="cal-row na">😴 —</div>`;
-    // diet — pink shade by calories
+    // diet — binary: 達標 or 未達標
     const dp=calDietPill(calMid);
     const dLine=dr&&calMid
       ?`<div class="cal-row" style="background:${dp.bg};color:${dp.txt}">🍽 ${Math.round(calMid)}kcal</div>`
       :`<div class="cal-row na">🍽 —</div>`;
-    // exercise — yellow shade by intensity
+    // protein — binary
+    const pp=dr?calProtPill(dr.prot):null;
+    const pLine=pp
+      ?`<div class="cal-row" style="background:${pp.bg};color:${pp.txt}">💪 ${dr.prot}g</div>`
+      :`<div class="cal-row na">💪 —</div>`;
+    // exercise — binary
     const ep=er?calExPill(er.type,er.int):null;
     const eLine=er
-      ?`<div class="cal-row" style="background:${ep.bg};color:${ep.txt}">💪 ${er.type}</div>`
-      :`<div class="cal-row na">💪 —</div>`;
-    // water — blue shade by goal ratio
+      ?`<div class="cal-row" style="background:${ep.bg};color:${ep.txt}">🏋 ${er.type}</div>`
+      :`<div class="cal-row na">🏋 —</div>`;
+    // water — binary
     let wLine='';
     if(dr&&dr.water){const wp=calWaterPill(dr.water);wLine=`<div class="cal-row" style="background:${wp.bg};color:${wp.txt}">💧 ${wp.lbl}</div>`;}
     cells.push(`<div class="cal-cell${isT?' today':''}${isSel?' sel':''}" onclick="calClick('${ds}')">
       <div class="cal-num">${d}</div>
-      ${sLine}${dLine}${eLine}${wLine}
+      ${sLine}${dLine}${pLine}${eLine}${wLine}
     </div>`);
   }
   document.getElementById('calGrid').innerHTML=cells.join('');
