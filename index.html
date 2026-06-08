@@ -1615,7 +1615,7 @@ async function geminiParse(txt,key){
 
 其他規則：時間用24小時制；凌晨1點=01:00；昨天/前天請推算日期；沒提到的資料 found:false`;
   const gOpts={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})};
-  const gUrl=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`;
+  const gUrl=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
   let res=await fetch(gUrl,gOpts);
   if(res.status===429){await new Promise(r=>setTimeout(r,4000));res=await fetch(gUrl,gOpts);}
   if(!res.ok)throw new Error(`Gemini API 錯誤 ${res.status}`);
