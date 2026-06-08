@@ -408,27 +408,13 @@ tbody td{padding:10px;vertical-align:top}
       <div id="calGrid" style="display:contents"></div>
     </div>
     <div class="cal-leg" style="margin-top:14px">
-      <div class="cal-leg-section">
-        <span class="cal-leg-title">😴 睡眠</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#c4b5fd;vertical-align:middle;margin-right:2px"></span>&lt;5h</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#a78bfa;vertical-align:middle;margin-right:2px"></span>5–7h</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#7c3aed;vertical-align:middle;margin-right:2px"></span>7–9h</span>
-      </div>
-      <div class="cal-leg-section" style="margin-top:4px">
-        <span class="cal-leg-title">🍽 飲食</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#fbcfe8;vertical-align:middle;margin-right:2px"></span>&lt;1500</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#f9a8d4;vertical-align:middle;margin-right:2px"></span>1500–2000</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#ec4899;vertical-align:middle;margin-right:2px"></span>2000–2500</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#be185d;vertical-align:middle;margin-right:2px"></span>&gt;2500</span>
-      </div>
-      <div class="cal-leg-section" style="margin-top:4px">
-        <span class="cal-leg-title">💪 運動</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#fde047;vertical-align:middle;margin-right:2px"></span>低</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#eab308;vertical-align:middle;margin-right:2px"></span>中</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#ca8a04;vertical-align:middle;margin-right:2px"></span>高</span>
-        <span class="cal-leg-title" style="margin-left:8px">💧 水分</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#bae6fd;vertical-align:middle;margin-right:2px"></span>&lt;50%</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#0369a1;vertical-align:middle;margin-right:2px"></span>達標 ✓</span>
+      <div class="cal-leg-section" style="gap:10px;flex-wrap:wrap">
+        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#c4b5fd;vertical-align:middle;margin-right:4px"></span>睡眠達標 ≥7h</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#f9a8d4;vertical-align:middle;margin-right:4px"></span>熱量達標 1500–1800</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#86efac;vertical-align:middle;margin-right:4px"></span>蛋白達標 ≥80g</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#fcd34d;vertical-align:middle;margin-right:4px"></span>有訓練</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#7dd3fc;vertical-align:middle;margin-right:4px"></span>飲水達標 ≥1400ml</span>
+        <span class="cal-leg-item" style="color:#aaa">淡色 = 未達標</span>
       </div>
     </div>
   </div>
@@ -1255,30 +1241,34 @@ function iv(i){return{高:3,中:2,低:1,無:0}[i]||0}
 function wkStart(){const n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));return m.toISOString().split('T')[0]}
 function pillTxt(bg){const h=bg.replace('#','');const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return(0.299*r+0.587*g+0.114*b)/255>0.65?'#374151':'#fff';}
 // Calendar pill colors: fixed hue per category, shade = quality
-// ── 二元制顏色（達標 vs 未達標）──────────────────────────────────────────────
+// ── 低飽和二元色（達標偏深、未達標偏淡）────────────────────────────────────
+const C={
+  sleep: {hit:{bg:'#c4b5fd',txt:'#4c1d95'}, miss:{bg:'#ede9fe',txt:'#7c6eaf'}, na:{bg:'#f5f3ff',txt:'#c4b5fd'}},
+  diet:  {hit:{bg:'#f9a8d4',txt:'#831843'}, miss:{bg:'#fce7f3',txt:'#c08aab'}, na:{bg:'#fff0f6',txt:'#f0c0d8'}},
+  prot:  {hit:{bg:'#86efac',txt:'#14532d'}, miss:{bg:'#dcfce7',txt:'#6aaa80'}, na:{bg:'#f0fdf4',txt:'#bbf7d0'}},
+  ex:    {hit:{bg:'#fcd34d',txt:'#78350f'}, miss:{bg:'#fef9c3',txt:'#a8935a'}, na:{bg:'#fffbeb',txt:'#e5d090'}},
+  water: {hit:{bg:'#7dd3fc',txt:'#0c4a6e'}, miss:{bg:'#e0f2fe',txt:'#4a9ab8'}, na:{bg:'#f0f9ff',txt:'#bae6fd'}},
+};
 function calSleepPill(h){
-  if(h==null)return{bg:'#ede9fe',txt:'#9ca3af'};
-  if(h>=7)return{bg:'#7c3aed',txt:'#fff'};      // 達標 深紫
-  return{bg:'#ddd6fe',txt:'#6d28d9'};            // 未達標 淡紫
+  if(h==null)return C.sleep.na;
+  return h>=7?C.sleep.hit:C.sleep.miss;
 }
 function calDietPill(cal){
-  if(!cal)return{bg:'#fce7f3',txt:'#9ca3af'};
-  if(cal>=1500&&cal<=1800)return{bg:'#ec4899',txt:'#fff'};  // 達標 深粉
-  return{bg:'#fce7f3',txt:'#be185d'};                       // 未達標 淡粉
+  if(!cal)return C.diet.na;
+  return(cal>=1500&&cal<=1800)?C.diet.hit:C.diet.miss;
 }
-function calExPill(type,intensity){
-  if(!type||type==='休息'||type==='未記錄')return{bg:'#fef9c3',txt:'#92400e'};
-  return{bg:'#eab308',txt:'#fff'};  // 有訓練 金黃
+function calExPill(type){
+  if(!type||type==='休息'||type==='未記錄')return C.ex.miss;
+  return C.ex.hit;
 }
 function calWaterPill(w){
   const hit=w>=WATER_TARGET;
-  const lbl=hit?`✓ ${w}ml`:`${w}/${WATER_TARGET}ml`;
-  return hit?{bg:'#0369a1',txt:'#fff',lbl}:{bg:'#bae6fd',txt:'#0369a1',lbl};
+  const lbl=hit?`飲水：${w}ml`:`飲水：${w}/${WATER_TARGET}`;
+  return {...(hit?C.water.hit:C.water.miss),lbl};
 }
 function calProtPill(prot){
   if(prot==null)return null;
-  if(prot>=80)return{bg:'#16a34a',txt:'#fff'};   // 達標 深綠
-  return{bg:'#dcfce7',txt:'#166534'};             // 未達標 淡綠
+  return prot>=80?C.prot.hit:C.prot.miss;
 }
 function dAgo(n){const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0]}
 function mid(r){if(!r.cMin)return null;return r.cMax?(r.cMin+r.cMax)/2:r.cMin}
@@ -1911,29 +1901,25 @@ function renderCal(){
     const sr=sR.find(r=>r.date===ds),dr=dR.find(r=>r.date===ds),er=eR.find(r=>r.date===ds);
     const sq_=sr?sq(sr.h):{bg:'',t:''};
     const calMid=dr?mid(dr):null;
-    // sleep — purple shade by quality
-    const sp=calSleepPill(sr&&sr.h!=null?sr.h:null);
-    const sLine=sr&&sr.h!=null
-      ?`<div class="cal-row" style="background:${sp.bg};color:${sp.txt}">😴 ${fh(sr.h)}</div>`
-      :`<div class="cal-row na">😴 —</div>`;
-    // diet — binary: 達標 or 未達標
+    const sp=calSleepPill(sr?.h??null);
+    const sLine=sr?.h!=null
+      ?`<div class="cal-row" style="background:${sp.bg};color:${sp.txt}">睡眠：${fh(sr.h)}</div>`
+      :`<div class="cal-row na">睡眠：—</div>`;
     const dp=calDietPill(calMid);
     const dLine=dr&&calMid
-      ?`<div class="cal-row" style="background:${dp.bg};color:${dp.txt}">🍽 ${Math.round(calMid)}kcal</div>`
-      :`<div class="cal-row na">🍽 —</div>`;
-    // protein — binary
+      ?`<div class="cal-row" style="background:${dp.bg};color:${dp.txt}">熱量：${Math.round(calMid)}</div>`
+      :`<div class="cal-row na">熱量：—</div>`;
     const pp=dr?calProtPill(dr.prot):null;
     const pLine=pp
-      ?`<div class="cal-row" style="background:${pp.bg};color:${pp.txt}">💪 ${dr.prot}g</div>`
-      :`<div class="cal-row na">💪 —</div>`;
-    // exercise — binary
-    const ep=er?calExPill(er.type,er.int):null;
-    const eLine=er
-      ?`<div class="cal-row" style="background:${ep.bg};color:${ep.txt}">🏋 ${er.type}</div>`
-      :`<div class="cal-row na">🏋 —</div>`;
-    // water — binary
+      ?`<div class="cal-row" style="background:${pp.bg};color:${pp.txt}">蛋白：${dr.prot}g</div>`
+      :`<div class="cal-row na">蛋白：—</div>`;
+    const ep=er?calExPill(er.type):null;
+    const exLabel=er?(er.type==='休息'||er.type==='未記錄'?'休息':'訓練：'+er.type):'訓練：—';
+    const eLine=ep
+      ?`<div class="cal-row" style="background:${ep.bg};color:${ep.txt}">${exLabel}</div>`
+      :`<div class="cal-row na">訓練：—</div>`;
     let wLine='';
-    if(dr&&dr.water){const wp=calWaterPill(dr.water);wLine=`<div class="cal-row" style="background:${wp.bg};color:${wp.txt}">💧 ${wp.lbl}</div>`;}
+    if(dr?.water){const wp=calWaterPill(dr.water);wLine=`<div class="cal-row" style="background:${wp.bg};color:${wp.txt}">${wp.lbl}</div>`;}
     cells.push(`<div class="cal-cell${isT?' today':''}${isSel?' sel':''}" onclick="calClick('${ds}')">
       <div class="cal-num">${d}</div>
       ${sLine}${dLine}${pLine}${eLine}${wLine}
