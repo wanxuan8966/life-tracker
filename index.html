@@ -4,34 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📔 生活紀錄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <style>
-:root{--bg:#f0f2f5;--card:#fff;--p:#6366f1;--pl:#e0e7ff;--t:#111827;--t2:#6b7280;--bd:#e5e7eb;--sh:0 1px 3px rgba(0,0,0,.1);--r:12px}
+:root{--bg:#faf6ef;--card:#fffcf8;--p:#b36b7c;--pl:#f5e6ea;--t:#2d1f1f;--t2:#957878;--bd:#e8d8d0;--sh:0 1px 4px rgba(80,40,40,.08);--r:16px;--serif:'Cormorant Garamond','Songti SC','Noto Serif TC',serif}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Segoe UI',sans-serif;background:var(--bg);color:var(--t);font-size:14px;line-height:1.5}
 header{background:var(--card);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:stretch;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
-.brand{font-size:17px;font-weight:700;display:flex;align-items:center;padding:12px 0}
+.brand{font-size:20px;font-weight:600;font-family:var(--serif);letter-spacing:.02em;display:flex;align-items:center;padding:12px 0}
 nav{display:flex;gap:2px;align-items:center}
 .tb{background:none;border:none;padding:10px 16px;cursor:pointer;font-size:14px;color:var(--t2);border-bottom:3px solid transparent;transition:color .15s,border-color .15s;font-weight:500}
 .tb.on{color:var(--p);border-bottom-color:var(--p)}
 .tb:hover:not(.on){color:var(--t)}
 .hdr-r{display:flex;align-items:center;gap:8px}
 .bsm{background:var(--pl);color:var(--p);border:none;padding:7px 13px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500}
-.bsm:hover{background:#c7d2fe}
+.bsm:hover{background:#eeddd6}
 .tab{display:none}.tab.on{display:block}
 .page{max-width:1200px;margin:0 auto;padding:18px 14px;display:flex;flex-direction:column;gap:16px}
 .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .sc{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh)}
 .sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t2);margin-bottom:5px}
-.sv{font-size:24px;font-weight:700}.sv span{font-size:13px;font-weight:400;color:var(--t2)}
+.sv{font-size:26px;font-weight:600;font-family:var(--serif)}.sv span{font-size:13px;font-weight:400;color:var(--t2);font-family:-apple-system,BlinkMacSystemFont,'PingFang TC',sans-serif}
 .ss{font-size:12px;color:var(--t2);margin-top:3px}
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;margin-top:4px}
 .g2{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
 .card{background:var(--card);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh)}
-.card h2{font-size:15px;font-weight:600;margin-bottom:12px}
+.card h2{font-size:17px;font-weight:600;font-family:var(--serif);letter-spacing:.02em;margin-bottom:12px}
 .fg{margin-bottom:11px}
 .fg label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--t2);margin-bottom:4px}
 .fg input,.fg textarea,.fg select{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;font-size:14px;color:var(--t);background:#fafafa;font-family:inherit;transition:border-color .15s}
@@ -39,7 +42,7 @@ nav{display:flex;gap:2px;align-items:center}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cd{background:var(--pl);color:var(--p);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600;text-align:center;margin-bottom:10px;transition:background .2s,color .2s}
 .bm{width:100%;background:var(--p);color:#fff;border:none;padding:10px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
-.bm:hover{background:#4f46e5}
+.bm:hover{background:#9a5a69}
 .bc{width:100%;background:var(--bg);color:var(--t2);border:1px solid var(--bd);padding:8px;border-radius:8px;font-size:13px;cursor:pointer;margin-top:6px;display:none}
 .cw{position:relative;height:240px}
 .leg{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
@@ -50,7 +53,7 @@ table{width:100%;border-collapse:collapse}
 thead th{text-align:left;padding:7px 10px;font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--bd);white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--bd);transition:background .1s}
 tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#f9fafb}
+tbody tr:hover{background:#fdf5f2}
 tbody td{padding:10px;vertical-align:top}
 .act{background:none;border:none;cursor:pointer;padding:3px 5px;border-radius:5px;font-size:13px;color:var(--t2);opacity:.6}
 .act:hover{background:var(--bg);opacity:1}
@@ -106,7 +109,7 @@ tbody td{padding:10px;vertical-align:top}
     display:flex!important;
     position:fixed;bottom:68px;right:16px;z-index:250;
     width:52px;height:52px;border-radius:50%;border:none;
-    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    background:linear-gradient(135deg,#b36b7c,#c4857a);
     color:#fff;font-size:22px;
     align-items:center;justify-content:center;
     box-shadow:0 4px 18px rgba(99,102,241,.45);
@@ -218,7 +221,7 @@ tbody td{padding:10px;vertical-align:top}
 .apihint a{color:var(--p)}
 #aiInput{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:120px;line-height:1.6;background:#fafafa}
 #aiInput:focus{outline:none;border-color:var(--p);background:#fff}
-.aibtn{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;padding:11px 20px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s}
+.aibtn{background:linear-gradient(135deg,#b36b7c,#c4857a);color:#fff;border:none;padding:11px 20px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s}
 .aibtn:hover{opacity:.9}
 .aibtn:disabled{opacity:.5;cursor:not-allowed}
 .loading{text-align:center;padding:20px;color:var(--t2);font-size:14px}
@@ -234,7 +237,7 @@ tbody td{padding:10px;vertical-align:top}
 .confirm-row{display:flex;gap:8px}
 .bbg{background:var(--bg);color:var(--t);border:1px solid var(--bd);padding:9px 16px;border-radius:8px;font-size:14px;cursor:pointer;flex:1}
 .bbp{background:var(--p);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;flex:2}
-.bbp:hover{background:#4f46e5}
+.bbp:hover{background:#9a5a69}
 .err{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;font-size:13px;color:#b91c1c}
 .ok{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:500}
 /* ── Auth UI ── */
@@ -274,20 +277,20 @@ tbody td{padding:10px;vertical-align:top}
 .det-body{flex:1;font-size:13px}
 .det-body b{font-weight:700}
 /* ── Weekly Tips ── */
-.tips-bar{background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tips-bar{background:linear-gradient(135deg,#b36b7c 0%,#c4857a 100%);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .tips-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.8;white-space:nowrap}
 .tips-list{display:flex;gap:10px;flex-wrap:wrap;flex:1}
-.tip{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;white-space:nowrap}
-.tip.good{background:rgba(34,197,94,.25)}
-.tip.warn{background:rgba(251,191,36,.25)}
-.tip.bad{background:rgba(239,68,68,.25)}
-@keyframes editPulse{0%{box-shadow:0 0 0 0 #6366f140;border-color:var(--p)}50%{box-shadow:0 0 0 8px transparent;border-color:var(--p)}100%{box-shadow:0 0 0 0 transparent;border-color:var(--bd)}}
+.tip{background:rgba(255,255,255,.22);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;white-space:nowrap;color:#fff}
+.tip.good{background:rgba(255,255,255,.88);color:#3a6b48}
+.tip.warn{background:rgba(255,255,255,.88);color:#7a4e1e}
+.tip.bad{background:rgba(255,255,255,.88);color:#8b2e2e}
+@keyframes editPulse{0%{box-shadow:0 0 0 0 #b36b7c40;border-color:var(--p)}50%{box-shadow:0 0 0 8px transparent;border-color:var(--p)}100%{box-shadow:0 0 0 0 transparent;border-color:var(--bd)}}
 .edit-flash{animation:editPulse 1.2s ease;border:2px solid var(--p) !important}
 /* ── Training Tab ── */
 .ex-sel{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;font-size:14px;color:var(--t);background:#fafafa;font-family:inherit;margin-bottom:12px}
 .ex-sel:focus{outline:none;border-color:var(--p);background:#fff}
-.insight{background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 14px;font-size:13px}
-.insight-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid #e0e7ff}
+.insight{background:#fdf8f5;border:1px solid #f0ddd8;border-radius:10px;padding:12px 14px;font-size:13px}
+.insight-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid #f0ddd8}
 .insight-item:last-child{border-bottom:none}
 .insight-icon{font-size:15px;flex-shrink:0;margin-top:2px}
 .insight-good{color:#15803d;font-weight:600}
@@ -376,7 +379,7 @@ tbody td{padding:10px;vertical-align:top}
   </nav>
   <div class="hdr-r">
     <div id="authUI"></div>
-    <button class="bsm" id="hdrAI" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff" onclick="openAI()">💬 快速輸入</button>
+    <button class="bsm" id="hdrAI" style="background:linear-gradient(135deg,#b36b7c,#c4857a);color:#fff" onclick="openAI()">💬 快速輸入</button>
     <button class="bsm" onclick="openHelp()" style="font-weight:700">？ 說明</button>
     <button class="bsm" id="expBtn">⬇ 匯出 CSV</button>
   </div>
@@ -486,7 +489,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="cal-grid">
       <div class="cal-head">一</div><div class="cal-head">二</div><div class="cal-head">三</div>
       <div class="cal-head">四</div><div class="cal-head">五</div>
-      <div class="cal-head" style="color:#6366f1">六</div><div class="cal-head">日</div>
+      <div class="cal-head" style="color:var(--p)">六</div><div class="cal-head">日</div>
       <div id="calGrid" style="display:contents"></div>
     </div>
     <div class="cal-leg" style="margin-top:14px">
@@ -567,11 +570,11 @@ tbody td{padding:10px;vertical-align:top}
       <h2>睡眠趨勢（近14天）</h2>
       <div class="cw"><canvas id="sChart"></canvas></div>
       <div class="leg">
-        <div class="li"><div class="ld" style="background:#ef4444"></div>嚴重不足(&lt;5h)</div>
-        <div class="li"><div class="ld" style="background:#f97316"></div>不足(5–6.5h)</div>
-        <div class="li"><div class="ld" style="background:#eab308"></div>略少(6.5–7h)</div>
-        <div class="li"><div class="ld" style="background:#22c55e"></div>良好(7–9h)</div>
-        <div class="li"><div class="ld" style="background:#a855f7"></div>偏多(&gt;9h)</div>
+        <div class="li"><div class="ld" style="background:#c47878"></div>嚴重不足(&lt;5h)</div>
+        <div class="li"><div class="ld" style="background:#c4957a"></div>不足(5–6.5h)</div>
+        <div class="li"><div class="ld" style="background:#c4b07a"></div>略少(6.5–7h)</div>
+        <div class="li"><div class="ld" style="background:#7aab8a"></div>良好(7–9h)</div>
+        <div class="li"><div class="ld" style="background:#a882c4"></div>偏多(&gt;9h)</div>
       </div>
     </div>
   </div>
@@ -617,10 +620,10 @@ tbody td{padding:10px;vertical-align:top}
       <h2>熱量趨勢（近14天）</h2>
       <div class="cw"><canvas id="dChart"></canvas></div>
       <div class="leg">
-        <div class="li"><div class="ld" style="background:#22c55e"></div>低(&lt;1500)</div>
-        <div class="li"><div class="ld" style="background:#eab308"></div>適中(1500–2000)</div>
-        <div class="li"><div class="ld" style="background:#f97316"></div>偏高(2000–2500)</div>
-        <div class="li"><div class="ld" style="background:#ef4444"></div>高(&gt;2500)</div>
+        <div class="li"><div class="ld" style="background:#7aab8a"></div>低(&lt;1500)</div>
+        <div class="li"><div class="ld" style="background:#c4a878"></div>適中(1500–2000)</div>
+        <div class="li"><div class="ld" style="background:#c4857a"></div>偏高(2000–2500)</div>
+        <div class="li"><div class="ld" style="background:#b85a5a"></div>高(&gt;2500)</div>
       </div>
     </div>
   </div>
@@ -665,12 +668,12 @@ tbody td{padding:10px;vertical-align:top}
       <h2>運動強度趨勢（近14天）</h2>
       <div class="cw"><canvas id="eChart"></canvas></div>
       <div class="leg">
-        <div class="li"><div class="ld" style="background:#6366f1"></div>重訓</div>
-        <div class="li"><div class="ld" style="background:#f97316"></div>有氧</div>
-        <div class="li"><div class="ld" style="background:#8b5cf6"></div>教練課</div>
-        <div class="li"><div class="ld" style="background:#22c55e"></div>居家</div>
-        <div class="li"><div class="ld" style="background:#0ea5e9"></div>混合</div>
-        <div class="li"><div class="ld" style="background:#d1d5db"></div>休息</div>
+        <div class="li"><div class="ld" style="background:#b36b7c"></div>重訓</div>
+        <div class="li"><div class="ld" style="background:#c4857a"></div>有氧</div>
+        <div class="li"><div class="ld" style="background:#a882c4"></div>教練課</div>
+        <div class="li"><div class="ld" style="background:#7aab8a"></div>居家</div>
+        <div class="li"><div class="ld" style="background:#7a9ec4"></div>混合</div>
+        <div class="li"><div class="ld" style="background:#c8bfba"></div>休息</div>
       </div>
     </div>
   </div>
@@ -718,7 +721,7 @@ tbody td{padding:10px;vertical-align:top}
       <h2>體重趨勢</h2>
       <div class="cw" style="height:210px"><canvas id="wChart"></canvas></div>
       <div class="leg" style="margin-top:8px">
-        <div class="li"><div class="ld" style="background:#6366f1"></div>正常</div>
+        <div class="li"><div class="ld" style="background:#5f8a73"></div>正常</div>
         <div class="li"><div class="ld" style="background:#f97316"></div>接近警戒（49kg）</div>
         <div class="li"><div class="ld" style="background:#ef4444"></div>超過上限（50kg）</div>
       </div>
@@ -775,7 +778,7 @@ tbody td{padding:10px;vertical-align:top}
     <button onclick="closePlan()">✕</button>
   </div>
   <div class="mbody">
-    <div style="background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 16px">
+    <div style="background:#fdf8f5;border:1px solid #f0ddd8;border-radius:10px;padding:12px 16px">
       <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">今日狀態</div>
       <div id="planReadiness" style="font-size:13px;line-height:1.6"></div>
     </div>
@@ -811,7 +814,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="sc"><div class="sl">總紀錄筆數</div><div class="sv" id="ts4">—</div><div class="ss">組次紀錄</div></div>
   </div>
   <div style="display:flex;justify-content:flex-end;gap:8px">
-    <button class="bsm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:9px 16px;font-size:14px" onclick="genTrainPlan('gym')">🏋 重訓菜單</button>
+    <button class="bsm" style="background:linear-gradient(135deg,#b36b7c,#c4857a);color:#fff;padding:9px 16px;font-size:14px" onclick="genTrainPlan('gym')">🏋 重訓菜單</button>
     <button class="bsm" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4);color:#fff;padding:9px 16px;font-size:14px" onclick="genTrainPlan('home')">🏠 居家菜單</button>
   </div>
   <div class="g2">
@@ -1266,7 +1269,7 @@ function updateAuthUI(){
       <button class="bsm" onclick="signOut()" style="padding:5px 10px;font-size:12px">登出</button>
     </div>`;
   }else{
-    el.innerHTML=`<button class="bsm" onclick="signIn()" style="background:#4285F4;color:#fff;border:none">☁ 雲端同步（登入）</button>`;
+    el.innerHTML=`<button class="bsm" onclick="signIn()">☁ 雲端同步（登入）</button>`;
   }
 }
 function initAuth(){
@@ -1323,15 +1326,15 @@ function ch(s,w){
 }
 function fh(h){if(h==null)return'—';const hh=Math.floor(h),mm=Math.round((h-hh)*60);return mm?`${hh}h ${mm}m`:`${hh}h`}
 function sq(h){
-  if(h==null)return{bg:'#9ca3af',t:'#4b5563',l:'未知'};
-  if(h<5)return{bg:'#ef4444',t:'#b91c1c',l:'嚴重不足'};
-  if(h<6.5)return{bg:'#f97316',t:'#c2410c',l:'不足'};
-  if(h<7)return{bg:'#eab308',t:'#92400e',l:'略少'};
-  if(h<=9)return{bg:'#22c55e',t:'#15803d',l:'良好'};
-  return{bg:'#a855f7',t:'#7e22ce',l:'偏多'};
+  if(h==null)return{bg:'#c8bfba',t:'#6b5f5f',l:'未知'};
+  if(h<5)return{bg:'#c47878',t:'#7a3030',l:'嚴重不足'};
+  if(h<6.5)return{bg:'#c4957a',t:'#7a4a2a',l:'不足'};
+  if(h<7)return{bg:'#c4b07a',t:'#7a5f2a',l:'略少'};
+  if(h<=9)return{bg:'#7aab8a',t:'#2e5e3a',l:'良好'};
+  return{bg:'#a882c4',t:'#4a2e6b',l:'偏多'};
 }
-function cc(v){if(!v)return'#9ca3af';if(v<1500)return'#22c55e';if(v<2000)return'#eab308';if(v<2500)return'#f97316';return'#ef4444'}
-function ec(t){return{重訓:'#6366f1',有氧:'#f97316',教練課:'#8b5cf6',居家:'#22c55e',混合:'#0ea5e9',休息:'#d1d5db',未記錄:'#e5e7eb'}[t]||'#9ca3af'}
+function cc(v){if(!v)return'#c8bfba';if(v<1500)return'#7aab8a';if(v<2000)return'#c4a878';if(v<2500)return'#c4857a';return'#b85a5a'}
+function ec(t){return{重訓:'#b36b7c',有氧:'#c4857a',教練課:'#a882c4',居家:'#7aab8a',混合:'#7a9ec4',休息:'#c8bfba',未記錄:'#ddd5d0'}[t]||'#c8bfba'}
 function iv(i){return{高:3,中:2,低:1,無:0}[i]||0}
 function wkStart(){const n=new Date(),d=n.getDay(),m=new Date(n);m.setDate(n.getDate()-(d===0?6:d-1));return m.toISOString().split('T')[0]}
 function pillTxt(bg){const h=bg.replace('#','');const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return(0.299*r+0.587*g+0.114*b)/255>0.65?'#374151':'#fff';}
@@ -1394,9 +1397,9 @@ function renderInsightBox(el,tips,title){
   if(!el||!tips.length){if(el)el.innerHTML='';return;}
   const cc2={good:'#15803d',warn:'#b45309',bad:'#b91c1c',neutral:'#6b7280'};
   const bg2={good:'#f0fdf4',warn:'#fef9c3',bad:'#fef2f2',neutral:'#f3f4f6'};
-  el.innerHTML=`<div style="background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 16px;margin-bottom:2px">
+  el.innerHTML=`<div style="background:#fdf8f5;border:1px solid #f0ddd8;border-radius:10px;padding:12px 16px;margin-bottom:2px">
     <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">💡 ${title}</div>
-    ${tips.map(t=>`<div style="padding:4px 0;border-bottom:1px solid #e0e7ff"><span style="display:inline-block;font-size:12px;padding:3px 10px;border-radius:8px;background:${bg2[t.cls]};color:${cc2[t.cls]};line-height:1.6">${t.msg}</span></div>`).join('')}
+    ${tips.map(t=>`<div style="padding:4px 0;border-bottom:1px solid #f0ddd8"><span style="display:inline-block;font-size:12px;padding:3px 10px;border-radius:8px;background:${bg2[t.cls]};color:${cc2[t.cls]};line-height:1.6">${t.msg}</span></div>`).join('')}
   </div>`;
 }
 function rSInsight(){
@@ -1525,12 +1528,12 @@ function rSChart(){
   if(sC)sC.destroy();
   sC=new Chart(ctx,{type:'bar',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:pts.map(r=>r.h??0),backgroundColor:pts.map(r=>sq(r.h).bg),borderRadius:5,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const r=pts[c.dataIndex];return r.h?`${fh(r.h)}（${sq(r.h).l}）`:'未記錄';}}}},
-    scales:{y:{min:0,max:13,ticks:{callback:v=>`${v}h`,stepSize:2},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
+    scales:{y:{min:0,max:13,ticks:{callback:v=>`${v}h`,stepSize:2},grid:{color:'#ede8e3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
     plugins:[{id:'rl',beforeDraw({ctx:c,chartArea:a,scales:sc}){
       if(!a)return;[[7,'建議下限 7h'],[8,'建議上限 8h']].forEach(([v,l])=>{
         const y=sc.y.getPixelForValue(v);c.save();c.beginPath();c.moveTo(a.left,y);c.lineTo(a.right,y);
-        c.strokeStyle='#6366f140';c.lineWidth=1.5;c.setLineDash([4,4]);c.stroke();
-        c.fillStyle='#6366f199';c.font='11px -apple-system,sans-serif';c.textAlign='right';c.fillText(l,a.right,y-4);c.restore();
+        c.strokeStyle='#b36b7c40';c.lineWidth=1.5;c.setLineDash([4,4]);c.stroke();
+        c.fillStyle='#b36b7c99';c.font='11px -apple-system,sans-serif';c.textAlign='right';c.fillText(l,a.right,y-4);c.restore();
       });
     }}]
   });
@@ -1591,13 +1594,13 @@ function rDChart(){
   const mids=pts.map(r=>mid(r));
   dC=new Chart(ctx,{type:'bar',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:mids,backgroundColor:mids.map(v=>cc(v)),borderRadius:5,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${fcal(pts[c.dataIndex])} kcal`}}},
-    scales:{y:{min:0,ticks:{callback:v=>`${v}`},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
+    scales:{y:{min:0,ticks:{callback:v=>`${v}`},grid:{color:'#ede8e3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
     plugins:[{id:'rl2',beforeDraw({ctx:c,chartArea:a,scales:sc}){
       if(!a)return;[[1500,'低熱量線'],[2000,'適中上限']].forEach(([v,l])=>{
         const y=sc.y.getPixelForValue(v);if(y<a.top||y>a.bottom)return;
         c.save();c.beginPath();c.moveTo(a.left,y);c.lineTo(a.right,y);
-        c.strokeStyle='#6366f130';c.lineWidth=1.5;c.setLineDash([4,4]);c.stroke();
-        c.fillStyle='#6366f180';c.font='11px -apple-system,sans-serif';c.textAlign='right';c.fillText(l,a.right,y-4);c.restore();
+        c.strokeStyle='#b36b7c30';c.lineWidth=1.5;c.setLineDash([4,4]);c.stroke();
+        c.fillStyle='#b36b7c80';c.font='11px -apple-system,sans-serif';c.textAlign='right';c.fillText(l,a.right,y-4);c.restore();
       });
     }}]
   });
@@ -1651,7 +1654,7 @@ function rEChart(){
   if(eC)eC.destroy();
   eC=new Chart(ctx,{type:'bar',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:pts.map(r=>iv(r.int)||0.25),backgroundColor:pts.map(r=>ec(r.type)),borderRadius:5,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${pts[c.dataIndex].type}（${pts[c.dataIndex].int}強度）`}}},
-    scales:{y:{min:0,max:3.5,ticks:{stepSize:1,callback:v=>({0:'',1:'低',2:'中',3:'高'}[v]||'')},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
+    scales:{y:{min:0,max:3.5,ticks:{stepSize:1,callback:v=>({0:'',1:'低',2:'中',3:'高'}[v]||'')},grid:{color:'#ede8e3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
   });
 }
 function rETable(){
@@ -2125,13 +2128,13 @@ function dayInsight(ds,sr,dr,er){
   else overall='普通的一天，持續記錄就有進步';
   const cc2={good:'#15803d',warn:'#b45309',bad:'#b91c1c',neutral:'#6b7280'};
   const bg2={good:'#f0fdf4',warn:'#fef9c3',bad:'#fef2f2',neutral:'#f3f4f6'};
-  return`<div style="margin-top:10px;background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:12px 14px">
+  return`<div style="margin-top:10px;background:#fdf8f5;border:1px solid #f0ddd8;border-radius:10px;padding:12px 14px">
     <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">💡 今日總結</div>
     ${tips.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0">
       <span style="font-size:13px">${t.icon}</span>
       <span style="font-size:12px;padding:2px 8px;border-radius:8px;background:${bg2[t.cls]};color:${cc2[t.cls]}">${t.msg}</span>
     </div>`).join('')}
-    <div style="font-size:12px;font-weight:600;color:var(--t);margin-top:8px;padding-top:8px;border-top:1px solid #e0e7ff">${overall}</div>
+    <div style="font-size:12px;font-weight:600;color:var(--t);margin-top:8px;padding-top:8px;border-top:1px solid #f0ddd8">${overall}</div>
   </div>`;
 }
 
@@ -2180,7 +2183,7 @@ function rHWeek(){
     <div style="border:1px solid var(--bd);border-radius:8px;padding:8px 12px">
       <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">${fd(d)}</div>
       ${rs.map(r=>`<div style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:3px">
-        <span style="background:#f0f4ff;color:#6366f1;padding:1px 8px;border-radius:10px;font-size:12px">${r.name}</span>
+        <span style="background:#f5ede9;color:#b36b7c;padding:1px 8px;border-radius:10px;font-size:12px">${r.name}</span>
         <span style="color:var(--t2)">${r.amount||''} ${r.timing}</span>
       </div>${r.note?`<div style="font-size:12px;color:var(--t2);margin-top:2px">🩺 ${r.note}</div>`:''}`).join('')}
     </div>`).join('');
@@ -2258,10 +2261,10 @@ function rTChart(){
   const pts=srt(tR.filter(r=>r.exercise===exName));
   if(!pts.length)return;
   const weights=pts.map(r=>r.weight);
-  const pColors=weights.map((w,i)=>i===0?'#6366f1':w>weights[i-1]?'#22c55e':w<weights[i-1]?'#ef4444':'#9ca3af');
-  tC=new Chart(ctx,{type:'line',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:weights,borderColor:'#6366f1',borderWidth:2,pointBackgroundColor:pColors,pointBorderColor:pColors,pointBorderWidth:2,pointRadius:6,pointHoverRadius:8,tension:0.3,fill:false}]},
+  const pColors=weights.map((w,i)=>i===0?'#b36b7c':w>weights[i-1]?'#22c55e':w<weights[i-1]?'#ef4444':'#9ca3af');
+  tC=new Chart(ctx,{type:'line',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:weights,borderColor:'#b36b7c',borderWidth:2,pointBackgroundColor:pColors,pointBorderColor:pColors,pointBorderWidth:2,pointRadius:6,pointHoverRadius:8,tension:0.3,fill:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const r=pts[c.dataIndex];return`${r.weight}kg × ${r.sets}組${r.reps}次`;},title:c=>`${pts[c[0].dataIndex].exercise} — ${fd(pts[c[0].dataIndex].date)}`}}},
-    scales:{y:{ticks:{callback:v=>`${v}kg`},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
+    scales:{y:{ticks:{callback:v=>`${v}kg`},grid:{color:'#ede8e3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}}
   });
   rTInsights(exName,pts);
 }
@@ -2424,7 +2427,7 @@ function rTTable(){
     return`<tr>
     <td style="font-weight:500;white-space:nowrap">${fd(r.date)}</td>
     <td style="font-weight:600">${r.exercise}</td>
-    <td style="font-weight:700;color:${isUp?'#15803d':isDn?'#b91c1c':'#6366f1'}">${r.weight}kg${isUp?' ↑':isDn?' ↓':''}</td>
+    <td style="font-weight:700;color:${isUp?'#15803d':isDn?'#b91c1c':'#7a7a7a'}">${r.weight}kg${isUp?' ↑':isDn?' ↓':''}</td>
     <td style="color:var(--t2)">${r.sets}×${r.reps}</td>
     <td style="color:var(--t2);font-size:13px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${(r.note||'').replace(/"/g,'&quot;')}">${r.note||'—'}</td>
     <td><button class="act" onclick="tEdit(${r.id})">✏️</button><button class="act" onclick="tDel(${r.id})">🗑</button></td>
@@ -2464,7 +2467,7 @@ function rWInsight(){
   const withMuscle=s.filter(r=>r.muscle!=null);
   const muscleDiff=withMuscle.length>=2?+(withMuscle[withMuscle.length-1].muscle-withMuscle[withMuscle.length-2].muscle).toFixed(1):null;
   // Rows
-  const row=(label,val,color,explain)=>`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #e0e7ff">
+  const row=(label,val,color,explain)=>`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #f0ddd8">
     <div style="font-size:12px;color:var(--t2);min-width:52px">${label}</div>
     <div style="font-weight:700;color:${color};font-size:14px;min-width:58px">${val}</div>
     <div style="font-size:12px;color:var(--t);flex:1">${explain}</div>
@@ -2497,10 +2500,10 @@ function rWInsight(){
   else if(!fatGood&&muscleDiff!==null&&muscleDiff>0.1)overall='💪 肌肉在增加，體脂略升是增肌期正常現象。控制甜飲、繼續訓練。';
   else if(wtDiff>0.5)overall='💧 體重突然上升多為水腫，確認是否高鈉飲食或生理期，多喝水 2–3 天後會回落。';
   else overall='📊 持續記錄中，資料累積後趨勢分析會更準確。';
-  el.innerHTML=`<div style="background:#f8faff;border:1px solid #e0e7ff;border-radius:10px;padding:14px 16px;margin-bottom:2px">
+  el.innerHTML=`<div style="background:#fdf8f5;border:1px solid #f0ddd8;border-radius:10px;padding:14px 16px;margin-bottom:2px">
     <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📊 體組成現況解讀</div>
     ${rows}
-    <div style="font-size:12px;color:var(--t);margin-top:10px;line-height:1.6;padding-top:8px;border-top:1px solid #e0e7ff">${overall}</div>
+    <div style="font-size:12px;color:var(--t);margin-top:10px;line-height:1.6;padding-top:8px;border-top:1px solid #f0ddd8">${overall}</div>
   </div>`;
 }
 function rWStats(){
@@ -2533,9 +2536,9 @@ function rWChart(){
   if(!pts.length)return;
   const weights=pts.map(r=>r.weight);
   const yMin=Math.min(...weights,44)-0.5,yMax=Math.max(...weights,51)+0.5;
-  wC=new Chart(ctx,{type:'line',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:weights,borderColor:'#6366f1',backgroundColor:'#6366f115',borderWidth:2,pointBackgroundColor:weights.map(w=>w>=WT_LIMIT?'#ef4444':w>=WT_WARN?'#f97316':'#6366f1'),pointBorderColor:weights.map(w=>w>=WT_LIMIT?'#ef4444':w>=WT_WARN?'#f97316':'#6366f1'),pointRadius:6,tension:0.3,fill:true}]},
+  wC=new Chart(ctx,{type:'line',data:{labels:pts.map(r=>fd(r.date)),datasets:[{data:weights,borderColor:'#b36b7c',backgroundColor:'#b36b7c12',borderWidth:2,pointBackgroundColor:weights.map(w=>w>=WT_LIMIT?'#ef4444':w>=WT_WARN?'#f97316':'#5f8a73'),pointBorderColor:weights.map(w=>w>=WT_LIMIT?'#ef4444':w>=WT_WARN?'#f97316':'#5f8a73'),pointRadius:6,tension:0.3,fill:true}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${pts[c.dataIndex].weight}kg${pts[c.dataIndex].fat?` ・體脂 ${pts[c.dataIndex].fat}%`:''}`}}},
-    scales:{y:{min:yMin,max:yMax,ticks:{callback:v=>`${v}kg`},grid:{color:'#f3f4f6'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
+    scales:{y:{min:yMin,max:yMax,ticks:{callback:v=>`${v}kg`},grid:{color:'#ede8e3'}},x:{ticks:{font:{size:11}},grid:{display:false}}}},
     plugins:[{id:'wl',beforeDraw({ctx:c,chartArea:a,scales:sc}){
       if(!a)return;
       [[WT_WARN,'⚠ 警戒 49kg','#f97316'],[WT_LIMIT,'🚨 上限 50kg','#ef4444'],[WT_IDEAL,'✓ 理想 45kg','#22c55e']].forEach(([v,l,col])=>{
@@ -2551,7 +2554,7 @@ function rWChart(){
 function rWTable(){
   document.getElementById('wTbody').innerHTML=srt(wR).reverse().map(r=>`<tr>
     <td style="font-weight:500;white-space:nowrap">${fd(r.date)}</td>
-    <td style="font-weight:700;color:${r.weight>=WT_LIMIT?'#b91c1c':r.weight>=WT_WARN?'#c2410c':'#6366f1'}">${r.weight>=WT_LIMIT?'🚨 ':r.weight>=WT_WARN?'⚠️ ':''}${r.weight} kg</td>
+    <td style="font-weight:700;color:${r.weight>=WT_LIMIT?'#b91c1c':r.weight>=WT_WARN?'#c2410c':'#5f8a73'}">${r.weight>=WT_LIMIT?'🚨 ':r.weight>=WT_WARN?'⚠️ ':''}${r.weight} kg</td>
     <td style="color:var(--t2)">${r.fat!=null?`${r.fat}%`:'—'}</td>
     <td style="color:var(--t2)">${r.muscle!=null?`${r.muscle}kg`:'—'}</td>
     <td style="color:var(--t2);font-size:13px">${r.note||'—'}</td>
