@@ -168,9 +168,11 @@ tbody td{padding:10px;vertical-align:top}
   .mhd{padding:18px 18px 0}
   .mbody{padding:14px 18px 24px}
 
-  /* ─ Tips bar ─ */
-  .tips-bar{padding:8px 12px;gap:8px;flex-wrap:wrap}
+  /* ─ Tips bar：手機預設收合 ─ */
+  .tips-bar{padding:8px 14px;gap:6px;flex-wrap:wrap}
   .tip{font-size:11px;padding:3px 9px}
+  #tipsList{display:none;width:100%}
+  #tipsList.open{display:flex}
 
   /* ─ 其他 ─ */
   .badge,.tag{font-size:11px;padding:2px 6px}
@@ -379,7 +381,7 @@ tbody td{padding:10px;vertical-align:top}
 
 <!-- ══ WEEKLY TIPS ══ -->
 <div class="tips-bar" id="tipsBar" style="display:none">
-  <span class="tips-label">💡 本週建議</span>
+  <span class="tips-label" id="tipsToggle" onclick="toggleTips()" style="cursor:pointer;user-select:none">💡 本週建議 <span id="tipsArrow" style="font-size:10px">▾</span></span>
   <div class="tips-list" id="tipsList"></div>
 </div>
 
@@ -1663,6 +1665,12 @@ function openAI(){
 function closeAI(){document.getElementById('aiOverlay').style.display='none';}
 function openHelp(){document.getElementById('helpOverlay').style.display='flex';}
 function closeHelp(){document.getElementById('helpOverlay').style.display='none';}
+function toggleTips(){
+  const list=document.getElementById('tipsList');
+  const arrow=document.getElementById('tipsArrow');
+  const open=list.classList.toggle('open');
+  arrow.textContent=open?'▴':'▾';
+}
 async function queryOFF(){
   const q=document.getElementById('offInput').value.trim();if(!q)return;
   const btn=document.getElementById('offBtn'),res=document.getElementById('offResult');
