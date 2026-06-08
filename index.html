@@ -378,8 +378,9 @@ tbody td{padding:10px;vertical-align:top}
       <div class="goal-item" id="g-cal">
         <div class="goal-icon">🍽</div>
         <div class="goal-label">熱量</div>
-        <div class="goal-target">1500–1800</div>
+        <div class="goal-target">1500–1650</div>
         <div class="goal-actual" id="ga-cal">—</div>
+        <div style="font-size:9px;color:var(--t2);margin-top:2px;line-height:1.4;text-align:center">重訓日 ≥1600<br>休息日 ≤1550</div>
       </div>
       <div class="goal-item" id="g-prot">
         <div class="goal-icon">💪</div>
@@ -410,7 +411,7 @@ tbody td{padding:10px;vertical-align:top}
     <div class="cal-leg" style="margin-top:14px">
       <div class="cal-leg-section" style="gap:10px;flex-wrap:wrap">
         <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#c4b5fd;vertical-align:middle;margin-right:4px"></span>睡眠達標 ≥7h</span>
-        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#f9a8d4;vertical-align:middle;margin-right:4px"></span>熱量達標 1500–1800</span>
+        <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#f9a8d4;vertical-align:middle;margin-right:4px"></span>熱量達標 1500–1650</span>
         <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#86efac;vertical-align:middle;margin-right:4px"></span>蛋白達標 ≥80g</span>
         <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#fcd34d;vertical-align:middle;margin-right:4px"></span>有訓練</span>
         <span class="cal-leg-item"><span style="display:inline-block;width:22px;height:9px;border-radius:2px;background:#7dd3fc;vertical-align:middle;margin-right:4px"></span>飲水達標 ≥1400ml</span>
@@ -1091,7 +1092,7 @@ const SK='lt_s',DK='lt_d',EK='lt_e',HK='lt_h',TK='lt_t',WK='lt_w';
 let sR=[],dR=[],eR=[],hR=[],tR=[],wR=[],sN=200,dN=200,eN=200,hN=200,tN=200,wN=200;
 let sC=null,dC=null,eC=null,tC=null,wC=null;
 const WATER_TARGET=1700;
-const CAL_LOW=1300,CAL_MIN=1500,CAL_MAX=1800,CAL_HIGH=2000;
+const CAL_LOW=1300,CAL_MIN=1500,CAL_MAX=1650,CAL_HIGH=1900;
 const WT_WARN=49,WT_LIMIT=50,WT_IDEAL=45;
 
 function loadLocal(){
@@ -1255,7 +1256,7 @@ function calSleepPill(h){
 }
 function calDietPill(cal){
   if(!cal)return C.diet.na;
-  return(cal>=1500&&cal<=1800)?C.diet.hit:C.diet.miss;
+  return(cal>=1500&&cal<=1650)?C.diet.hit:C.diet.miss;
 }
 function calExPill(type){
   if(!type||type==='休息'||type==='未記錄')return C.ex.miss;
