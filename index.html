@@ -59,6 +59,10 @@ tbody td{padding:10px;vertical-align:top}
 @media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
 /* ── FAB（預設隱藏，手機才顯示）── */
 #fabAI{display:none}
+#fabHelp{display:none}
+.help-sec{background:var(--bg);border-radius:10px;padding:12px 14px}
+.help-title{font-size:13px;font-weight:700;color:var(--t);margin-bottom:6px}
+.help-body{font-size:13px;color:var(--t2);line-height:1.7}
 
 /* ── 手機版（640px 以下）── */
 @media(max-width:640px){
@@ -103,6 +107,16 @@ tbody td{padding:10px;vertical-align:top}
     color:#fff;font-size:22px;
     align-items:center;justify-content:center;
     box-shadow:0 4px 18px rgba(99,102,241,.45);
+    cursor:pointer;-webkit-tap-highlight-color:transparent
+  }
+  /* ─ FAB：使用說明 ─ */
+  #fabHelp{
+    display:flex!important;
+    position:fixed;bottom:68px;left:16px;z-index:250;
+    width:42px;height:42px;border-radius:50%;border:none;
+    background:var(--card);color:var(--t2);font-size:18px;font-weight:700;
+    align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
     cursor:pointer;-webkit-tap-highlight-color:transparent
   }
 
@@ -283,6 +297,67 @@ tbody td{padding:10px;vertical-align:top}
 
 <!-- 手機 FAB：快速輸入 -->
 <button id="fabAI" onclick="openAI()" aria-label="快速輸入">💬</button>
+<button id="fabHelp" onclick="openHelp()" aria-label="使用說明">？</button>
+
+<!-- ══ HELP MODAL ══ -->
+<div class="overlay" id="helpOverlay" style="display:none" onclick="if(event.target===this)closeHelp()">
+<div class="modal">
+  <div class="mhd">
+    <h2>📋 使用說明 &amp; 記錄規則</h2>
+    <button onclick="closeHelp()">✕</button>
+  </div>
+  <div class="mbody" style="gap:16px">
+    <div class="help-sec">
+      <div class="help-title">😴 睡眠紀錄邏輯</div>
+      <div class="help-body">
+        <b>日期永遠填「起床那天」</b><br>
+        例：凌晨 4:00 睡 → 下午 1:30 起<br>
+        → 日期填起床日，睡覺填 04:00，起床填 13:30<br><br>
+        系統自動判斷跨夜（不用擔心睡覺時間比起床時間晚）<br>
+        「昨晚幾點睡」= 實際入睡時刻，通常是今天凌晨的時間
+      </div>
+    </div>
+    <div class="help-sec">
+      <div class="help-title">🍽 熱量目標</div>
+      <div class="help-body">
+        目標範圍：<b>1500–1650 kcal</b><br>
+        重訓日：≥ 1600 kcal（支撐肌肉修復）<br>
+        休息日：≤ 1550 kcal（輕微赤字燃脂）<br>
+        &lt; 1300 kcal 會影響肌肉合成，不要長期這樣
+      </div>
+    </div>
+    <div class="help-sec">
+      <div class="help-title">💪 蛋白質目標</div>
+      <div class="help-body">
+        每天 <b>≥ 80g</b>（理想 90–100g）<br>
+        增肌期蛋白質比熱量更重要<br>
+        簡單補法：茶葉蛋 6.6g、豆漿 8.5g、超能蛋白飲 20.3g<br>
+        雞胸肉 100g ≈ 30g、蒸蛋 2顆 ≈ 13g
+      </div>
+    </div>
+    <div class="help-sec">
+      <div class="help-title">💧 飲水目標</div>
+      <div class="help-body">
+        每天 <b>≥ 1400ml</b><br>
+        重訓日或高鈉飲食建議 1800–2000ml<br>
+        水腫通常是鈉太高 + 水喝不夠，不是真的胖
+      </div>
+    </div>
+    <div class="help-sec">
+      <div class="help-title">📱 LINE Bot 指令</div>
+      <div class="help-body">
+        <b>記錄資料：</b>直接說自然語言<br>
+        「今天凌晨4點睡，下午1點起，吃了茶葉蛋豆漿」<br><br>
+        <b>請訓練菜單：</b><br>
+        「幫我排今天的健身房訓練菜單」<br>
+        「幫我排居家訓練菜單」<br><br>
+        <b>追問（1小時內有效）：</b><br>
+        「划船重量可以加嗎」「這個太輕了」
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 
 <header>
   <div class="brand">📔 生活紀錄</div>
@@ -297,6 +372,7 @@ tbody td{padding:10px;vertical-align:top}
   <div class="hdr-r">
     <div id="authUI"></div>
     <button class="bsm" id="hdrAI" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff" onclick="openAI()">💬 快速輸入</button>
+    <button class="bsm" onclick="openHelp()" style="font-weight:700">？ 說明</button>
     <button class="bsm" id="expBtn">⬇ 匯出 CSV</button>
   </div>
 </header>
@@ -1585,6 +1661,8 @@ function openAI(){
   if(k)document.getElementById('gemKeyInp').value='••••••••';
 }
 function closeAI(){document.getElementById('aiOverlay').style.display='none';}
+function openHelp(){document.getElementById('helpOverlay').style.display='flex';}
+function closeHelp(){document.getElementById('helpOverlay').style.display='none';}
 async function queryOFF(){
   const q=document.getElementById('offInput').value.trim();if(!q)return;
   const btn=document.getElementById('offBtn'),res=document.getElementById('offResult');
