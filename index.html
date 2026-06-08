@@ -1028,6 +1028,17 @@ function migrate_ex_606_607(){
   }
   return changed;
 }
+function migrate608(){
+  let changed=false;
+  const sDates=new Set(sR.map(r=>r.date)),dDates=new Set(dR.map(r=>r.date)),eDates=new Set(eR.map(r=>r.date));
+  if(!sDates.has("2026-06-08")){sR.push({id:sN++,date:"2026-06-08",s:"07:00",w:"15:00",h:5,note:"分段睡：07:00-09:00（2h）+ 12:00-15:00（3h）",energy:null,lowPt:null,headache:false});changed=true;}
+  const r608d=dR.find(r=>r.date==="2026-06-08");
+  const details608="早餐: 大室紅茶拿鐵 240kcal 蛋白6.5g\n早餐: 南蠻炸雞烤糖吐司 600kcal 蛋白25g\n下午: 水煮蛋1顆 75kcal 蛋白6.6g\n下午: 奇異果1顆 52kcal 蛋白1g\n晚餐: 梅花豬肉片 275kcal 蛋白20g\n晚餐: 豆皮 115kcal 蛋白7.5g\n晚餐: 蛋1顆 75kcal 蛋白6.6g\n晚餐: 半碗飯 135kcal 蛋白2.5g\n晚餐: 馬告鯛魚半片 77kcal 蛋白14g\n點心: WE SWEET開心果可可脆Q餅 154.5kcal 蛋白2.2g\n飲料: 茶湯會鐵觀音拿鐵幾口 45kcal 蛋白1.5g";
+  if(r608d&&!r608d.details){r608d.cMin=1535;r608d.cMax=2130;r608d.prot=93;r608d.details=details608;r608d.note="分段睡5h，飲食合理";changed=true;}
+  else if(!r608d){dR.push({id:dN++,date:"2026-06-08",cMin:1535,cMax:2130,prot:93,water:null,details:details608,note:"分段睡5h，飲食合理"});changed=true;}
+  if(!eDates.has("2026-06-08")){eR.push({id:eN++,date:"2026-06-08",type:"休息",int:"無",details:"",note:"無正式運動"});changed=true;}
+  return changed;
+}
 // 標準動作名稱對照表
 const EX_NORMALIZE={'髖外展':'坐姿髖外展','內夾':'坐姿內夾','划船':'坐姿划船','深蹲':'高腳杯深蹲','壺鈴深蹲':'高腳杯深蹲','硬舉':'壺鈴硬舉'};
 function normalizeTExercises(){
@@ -1155,6 +1166,7 @@ function initAuth(){
         if(migrate531_606())needSync=true;
         if(migrate606_607())needSync=true;
         if(migrate_ex_606_607())needSync=true;
+        if(migrate608())needSync=true;
         if(needSync){saveLocal();await saveCloud();}
       }
       renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
