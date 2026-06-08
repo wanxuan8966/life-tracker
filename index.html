@@ -170,6 +170,21 @@ tbody td{padding:10px;vertical-align:top}
   .insight-msg{font-size:13px}
   .rcard{font-size:13px}
 }
+/* ── 每日目標列 ── */
+.goal-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 8px;border-radius:12px;background:var(--bg);transition:background .2s}
+.goal-item.hit{background:#dcfce7}
+.goal-item.miss{background:#fee2e2}
+.goal-item.warn{background:#fef9c3}
+.goal-item.na{background:var(--bg);opacity:.5}
+.goal-icon{font-size:20px}
+.goal-label{font-size:10px;color:var(--t2);font-weight:600;letter-spacing:.04em}
+.goal-target{font-size:11px;color:var(--t2)}
+.goal-actual{font-size:16px;font-weight:700;color:var(--t)}
+@media(max-width:640px){
+  #goalsGrid{grid-template-columns:repeat(2,1fr)}
+  .goal-actual{font-size:14px}
+  .goal-icon{font-size:18px}
+}
 /* ── AI Modal ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal{background:var(--card);border-radius:16px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
@@ -350,6 +365,36 @@ tbody td{padding:10px;vertical-align:top}
 <!-- ══ CALENDAR ══ -->
 <div id="tab-cal" class="tab on">
 <div class="page">
+  <!-- ── 每日基礎目標列 ── -->
+  <div class="card" id="dailyGoals" style="padding:16px 20px">
+    <div style="font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.05em;margin-bottom:12px">每日基礎目標</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="goalsGrid">
+      <div class="goal-item" id="g-sleep">
+        <div class="goal-icon">😴</div>
+        <div class="goal-label">睡眠</div>
+        <div class="goal-target">≥ 7h</div>
+        <div class="goal-actual" id="ga-sleep">—</div>
+      </div>
+      <div class="goal-item" id="g-cal">
+        <div class="goal-icon">🍽</div>
+        <div class="goal-label">熱量</div>
+        <div class="goal-target">1500–1800</div>
+        <div class="goal-actual" id="ga-cal">—</div>
+      </div>
+      <div class="goal-item" id="g-prot">
+        <div class="goal-icon">💪</div>
+        <div class="goal-label">蛋白質</div>
+        <div class="goal-target">≥ 80g</div>
+        <div class="goal-actual" id="ga-prot">—</div>
+      </div>
+      <div class="goal-item" id="g-water">
+        <div class="goal-icon">💧</div>
+        <div class="goal-label">飲水</div>
+        <div class="goal-target">≥ 1400ml</div>
+        <div class="goal-actual" id="ga-water">—</div>
+      </div>
+    </div>
+  </div>
   <div class="cal-wrap">
     <div class="cal-nav">
       <button class="cal-arr" onclick="calPrev()">‹</button>
@@ -1099,6 +1144,7 @@ async function saveCloud(){
 async function save(){
   saveLocal();
   if(fbUser)await saveCloud();
+  renderGoals();
 }
 async function loadCloud(){
   if(!fbUser)return false;
@@ -2399,6 +2445,23 @@ function rWTable(){
 }
 
 // ── WEEKLY TIPS ────────────────────────────────────────────────────────────
+function renderGoals(){
+  const td=today();
+  const s=sR.find(r=>r.date===td);
+  const d=dR.find(r=>r.date===td);
+  function setGoal(id,actualEl,val,fmt,hit,miss,na){
+    const item=document.getElementById(id);
+    const el=document.getElementById(actualEl);
+    if(val==null){item.className='goal-item na';el.textContent='未記錄';return;}
+    el.textContent=fmt(val);
+    item.className='goal-item '+(hit(val)?'hit':miss(val)?'miss':'warn');
+  }
+  setGoal('g-sleep','ga-sleep',s?.h,v=>fh(v),v=>v>=7,v=>v<5);
+  const cal=d?(d.cMin+d.cMax)/2:null;
+  setGoal('g-cal','ga-cal',cal,v=>Math.round(v)+'kcal',v=>v>=1500&&v<=1800,v=>v<1300||v>2000);
+  setGoal('g-prot','ga-prot',d?.prot,v=>v+'g',v=>v>=80,v=>v<60);
+  setGoal('g-water','ga-water',d?.water,v=>v+'ml',v=>v>=1400,v=>v<1000);
+}
 function renderTips(){
   const tips=[];
   const w7=wkStart(); // 本週一開始
@@ -2474,7 +2537,7 @@ document.getElementById('expBtn').addEventListener('click',()=>{
 // ── INIT ───────────────────────────────────────────────────────────────────
 ['sDate','dDate','eDate','hDate','tDate','wDate'].forEach(id=>document.getElementById(id).value=today());
 loadLocal();
-renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();
+renderCal();renderS();renderD();renderE();renderH();renderW();renderT();renderTips();renderGoals();
 updateAuthUI();
 initAuth();
 </script>
